@@ -1,0 +1,137 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 210 40% 96.1%; /* celeste muy claro */
+    --foreground: 215 28% 17%; /* azul oscuro */
+    --card: 210 40% 98%;
+    --card-foreground: 215 28% 17%;
+    --popover: 210 40% 98%;
+    --popover-foreground: 215 28% 17%;
+    --primary: 207 34% 60%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 91.2%;
+    --secondary-foreground: 215.4 16.3% 46.9%;
+    --muted: 210 40% 91.2%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 261 74% 73%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 207 34% 60%;
+    --chart-1: 207 34% 60%;
+    --chart-2: 261 74% 73%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+    --radius: 0.5rem;
+    --sidebar-background: 210 40% 96.1%; /* celeste muy claro */
+    --sidebar-foreground: 215 28% 17%; /* azul oscuro */
+    --sidebar-primary: 207 34% 60%;
+    --sidebar-primary-foreground: 210 40% 98%;
+    --sidebar-accent: 210 40% 91.2%; /* Color para hover/activo */
+    --sidebar-accent-foreground: 215 28% 17%;
+    --sidebar-border: 214.3 31.8% 91.4%;
+    --sidebar-ring: 207 34% 60%;
+  }
+  .dark {
+    --background: 216 28% 7%;
+    --foreground: 210 40% 98%;
+    --card: 216 28% 10%;
+    --card-foreground: 210 40% 98%;
+    --popover: 216 28% 10%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 207 34% 60%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 217 33% 17%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 261 74% 73%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 217 33% 17%;
+    --input: 217 33% 17%;
+    --ring: 207 34% 60%;
+    --chart-1: 207 34% 60%;
+    --chart-2: 261 74% 73%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+    --sidebar-background: 216 28% 10%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 207 34% 60%;
+    --sidebar-primary-foreground: 210 40% 98%;
+    --sidebar-accent: 217 33% 17%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 217 33% 17%;
+    --sidebar-ring: 207 34% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@media print {
+  body:not(.printing) .print-hidden {
+      display: none;
+  }
+
+  body.printing > *:not(#consultas-grid-section):not(#consultas-table-section) {
+    display: none;
+  }
+  
+  body.printing-consultas-grid-section #consultas-table-section {
+    display: none;
+  }
+
+  body.printing-consultas-table-section #consultas-grid-section {
+      display: none;
+  }
+
+  #consultas-grid-section, #consultas-table-section {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: auto;
+    box-shadow: none !important;
+    border: none !important;
+  }
+  
+  .print-hidden {
+    display: none !important;
+  }
+
+  .card, .table {
+    box-shadow: none !important;
+    border: 1px solid #ccc !important;
+    page-break-inside: avoid;
+  }
+
+  .grid {
+      display: grid !important; /* Keep grid for cards layout */
+      grid-template-columns: repeat(2, 1fr) !important; /* Example: 2 columns for print */
+      gap: 1rem;
+  }
+  
+  .grid > .card {
+    page-break-inside: avoid;
+    margin-bottom: 1rem;
+  }
+
+  .table, .table-row {
+    page-break-inside: avoid;
+  }
+}
