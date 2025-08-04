@@ -37,8 +37,8 @@ export function ConsultasTable({ consultas, onEdit, onDelete }: ConsultasTablePr
     if (!sortConfig.key) return consultas;
 
     return [...consultas].sort((a, b) => {
-      let aValue = a[sortConfig.key!];
-      let bValue = b[sortConfig.key!];
+      let aValue: any = a[sortConfig.key!];
+      let bValue: any = b[sortConfig.key!];
 
       // Convertir fechas para comparación
       if (sortConfig.key === 'fechaConsulta' || sortConfig.key === 'fechaControl') {
