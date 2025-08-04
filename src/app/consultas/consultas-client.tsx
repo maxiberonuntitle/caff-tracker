@@ -1,6 +1,7 @@
 
 'use client';
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
+import { useMobile } from '@/hooks/use-mobile';
 import { useSearchParams } from 'next/navigation';
 import type { DateRange } from 'react-day-picker';
 import { Button } from '@/components/ui/button';
@@ -16,7 +17,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { PlusCircle, Printer, ChevronLeft, ChevronRight, Grid3X3, Calendar, Table, Search, User, UserCheck, Filter, FileText, CalendarDays } from 'lucide-react';
+import { PlusCircle, Printer, ChevronLeft, ChevronRight, Grid3X3, Calendar, Table, Search, User, UserCheck, Filter, FileText, CalendarDays, ChevronDown } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import type { Consulta } from '@/lib/types';
 import { ConsultaForm, studyOptions } from './consulta-form';
@@ -42,6 +43,7 @@ type ConsultasClientProps = {
 export function ConsultasClient({ initialConsultas }: ConsultasClientProps) {
   const { toast } = useToast();
   const router = useRouter();
+  const isMobile = useMobile();
   const searchParams = useSearchParams();
   const [consultas, setConsultas] = useState<Consulta[]>(initialConsultas);
   const [isLoading, setIsLoading] = useState(false);
@@ -63,9 +65,25 @@ export function ConsultasClient({ initialConsultas }: ConsultasClientProps) {
   const [educatorFilter, setEducatorFilter] = useState('');
   const [patientFilter, setPatientFilter] = useState('');
   const [activeTab, setActiveTab] = useState('grid');
+  const [filtersExpanded, setFiltersExpanded] = useState(false);
 
   const studies = useMemo(() => ['todos', ...studyOptions], []);
   const lastFetchRef = useRef<number>(0);
+
+  // Texto de búsqueda global para móvil
+  const globalSearchText = useMemo(() => {
+    const parts = [];
+    if (patientFilter) parts.push(`Paciente: ${patientFilter}`);
+    if (educatorFilter) parts.push(`Educador/a: ${educatorFilter}`);
+    if (statusFilter !== 'todos') parts.push(`Estado: ${statusFilter}`);
+    if (studyFilter !== 'todos') parts.push(`Estudio: ${studyFilter}`);
+    if (dateFilter?.from) {
+      const fromDate = format(dateFilter.from, 'dd/MM/yyyy');
+      const toDate = dateFilter.to ? format(dateFilter.to, 'dd/MM/yyyy') : '';
+      parts.push(`Fechas: ${fromDate}${toDate ? ` - ${toDate}` : ''}`);
+    }
+    return parts.length > 0 ? parts.join(', ') : 'Buscar consultas...';
+  }, [patientFilter, educatorFilter, statusFilter, studyFilter, dateFilter]);
 
   // Manejar parámetro edit de la URL
   useEffect(() => {
@@ -201,6 +219,7 @@ export function ConsultasClient({ initialConsultas }: ConsultasClientProps) {
   };
 
   const handleEditConsulta = (consulta: Consulta) => {
+    console.log('Editando consulta desde calendario:', consulta);
     setSelectedConsulta(consulta);
     setIsFormOpen(true);
   };
@@ -239,7 +258,7 @@ export function ConsultasClient({ initialConsultas }: ConsultasClientProps) {
 
   const handleShare = (consulta: Consulta) => {
     const details = [
-      `🏥 CENTRO CAFF`,
+      `🏥 SISTEMA SGCM`,
       `CONSULTA MÉDICA`,
       `Fecha de generación: ${format(new Date(), 'dd/MM/yyyy HH:mm')}`,
       ``,
@@ -249,7 +268,7 @@ export function ConsultasClient({ initialConsultas }: ConsultasClientProps) {
       ``,
       `🔬 DETALLES DE LA CONSULTA`,
       `📊 Estudio: ${consulta.estudio}`,
-      `👨‍⚕️ Educador: ${consulta.educador}`,
+      `👨‍⚕️ Educador/a: ${consulta.educador}`,
       `📅 Fecha Consulta: ${format(new Date(consulta.fechaConsulta), 'dd/MM/yyyy')}`,
       `⏰ Fecha Control: ${format(new Date(consulta.fechaControl), 'dd/MM/yyyy')}`,
       `📈 Estado: ${consulta.estado}`,
@@ -259,7 +278,7 @@ export function ConsultasClient({ initialConsultas }: ConsultasClientProps) {
         `${consulta.observaciones}`
       ] : null,
       ``,
-      `📱 Compartido desde Sistema CAFF`,
+      `📱 Compartido desde Sistema SGCM`,
       `🕐 ${format(new Date(), 'dd/MM/yyyy HH:mm')}`
     ].filter(Boolean).flat().join('\n');
     
@@ -268,7 +287,7 @@ export function ConsultasClient({ initialConsultas }: ConsultasClientProps) {
   };
 
   const handleSharePDF = (consulta: Consulta) => {
-    // Crear el contenido HTML del PDF con el mismo formato que WhatsApp
+    // Crear el contenido HTML del PDF con diseño optimizado para impresión
     const htmlContent = `
       <!DOCTYPE html>
       <html>
@@ -276,72 +295,237 @@ export function ConsultasClient({ initialConsultas }: ConsultasClientProps) {
           <meta charset="utf-8">
           <title>Consulta Médica - ${consulta.nombre}</title>
           <style>
-            body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }
-            .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 20px; }
-            .section { margin-bottom: 25px; }
-            .section-title { font-size: 18px; font-weight: bold; color: #333; margin-bottom: 10px; border-bottom: 1px solid #ccc; padding-bottom: 5px; }
-            .field { margin-bottom: 8px; }
-            .label { font-weight: bold; color: #555; }
-            .value { color: #333; }
-            .observations { background-color: #f9f9f9; padding: 15px; border-radius: 5px; margin-top: 10px; }
-            .footer { margin-top: 40px; text-align: center; font-size: 12px; color: #666; border-top: 1px solid #ccc; padding-top: 20px; }
+            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+            
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+            
+            body { 
+              font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; 
+              margin: 0; 
+              line-height: 1.6; 
+              color: #1f2937;
+              background: white;
+              min-height: 100vh;
+            }
+            
+            .container {
+              max-width: 800px;
+              margin: 0 auto;
+              background: white;
+            }
+            
+            .header { 
+              background: #f8fafc;
+              color: #1f2937;
+              padding: 20px 30px;
+              text-align: center;
+              border-bottom: 2px solid #e5e7eb;
+            }
+            
+            .header h1 { 
+              font-size: 20px; 
+              font-weight: 700; 
+              margin-bottom: 4px;
+              letter-spacing: -0.025em;
+            }
+            
+            .header h2 { 
+              font-size: 14px; 
+              font-weight: 500; 
+              color: #6b7280;
+              margin-bottom: 8px;
+            }
+            
+            .header p { 
+              font-size: 12px; 
+              color: #6b7280;
+            }
+            
+            .content {
+              padding: 30px;
+            }
+            
+            .section { 
+              margin-bottom: 24px; 
+            }
+            
+            .section-title { 
+              font-size: 14px; 
+              font-weight: 600; 
+              color: #374151;
+              margin-bottom: 12px;
+              padding-bottom: 6px;
+              border-bottom: 1px solid #e5e7eb;
+              display: flex;
+              align-items: center;
+              gap: 6px;
+            }
+            
+            .field { 
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              padding: 8px 0;
+              border-bottom: 1px solid #f3f4f6;
+            }
+            
+            .field:last-child {
+              border-bottom: none;
+            }
+            
+            .label { 
+              font-weight: 500; 
+              color: #6b7280;
+              font-size: 13px;
+            }
+            
+            .value { 
+              color: #1f2937;
+              font-weight: 500;
+              font-size: 13px;
+              text-align: right;
+            }
+            
+            .observations { 
+              background: #f8fafc;
+              padding: 16px;
+              border: 1px solid #e5e7eb;
+              border-radius: 8px;
+              font-size: 13px;
+              line-height: 1.6;
+              min-height: 80px;
+            }
+            
+            .observations.empty {
+              color: #9ca3af;
+              font-style: italic;
+            }
+            
+            .status-badge {
+              display: inline-block;
+              padding: 3px 8px;
+              border-radius: 12px;
+              font-size: 10px;
+              font-weight: 600;
+              text-transform: uppercase;
+              letter-spacing: 0.05em;
+            }
+            
+            .status-agendada { background: #dbeafe; color: #1e40af; }
+            .status-pendiente { background: #fef3c7; color: #d97706; }
+            .status-completa { background: #d1fae5; color: #047857; }
+            
+            .footer { 
+              background: #f9fafb;
+              padding: 16px 30px;
+              text-align: center;
+              font-size: 11px;
+              color: #6b7280;
+              border-top: 1px solid #e5e7eb;
+            }
+            
+            .footer p {
+              margin-bottom: 2px;
+            }
+            
+            .footer p:last-child {
+              margin-bottom: 0;
+            }
+            
+            @media print {
+              body { background: white; }
+              .container { box-shadow: none; }
+            }
           </style>
         </head>
         <body>
-          <div class="header">
-            <h1>🏥 CENTRO CAFF</h1>
-            <h2>CONSULTA MÉDICA</h2>
-            <p>Fecha de generación: ${format(new Date(), 'dd/MM/yyyy HH:mm')}</p>
-          </div>
-          
-          <div class="section">
-            <div class="section-title">📋 INFORMACIÓN DEL PACIENTE</div>
-            <div class="field">
-              <span class="label">👤 Nombre:</span>
-              <span class="value">${consulta.nombre}</span>
+          <div class="container">
+            <div class="header">
+              <h1>SISTEMA SGCM</h1>
+              <h2>CONSULTA MÉDICA</h2>
+              <p>Fecha de generación: ${format(new Date(), 'dd/MM/yyyy HH:mm')}</p>
             </div>
-            <div class="field">
-              <span class="label">🆔 Cédula:</span>
-              <span class="value">${consulta.cedula}</span>
+            
+            <div class="content">
+              <div class="section">
+                <div class="section-title">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                  </svg>
+                  INFORMACIÓN DEL PACIENTE
+                </div>
+                <div class="field">
+                  <span class="label">Nombre</span>
+                  <span class="value">${consulta.nombre}</span>
+                </div>
+                <div class="field">
+                  <span class="label">Cédula</span>
+                  <span class="value">${consulta.cedula}</span>
+                </div>
+              </div>
+              
+              <div class="section">
+                <div class="section-title">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 12l2 2 4-4"></path>
+                    <path d="M21 12c-1 0-2-1-2-2s1-2 2-2 2 1 2 2-1 2-2 2z"></path>
+                    <path d="M3 12c1 0 2-1 2-2s-1-2-2-2-2 1-2 2 1 2 2 2z"></path>
+                    <path d="M12 3c0 1-1 2-2 2s-2-1-2-2 1-2 2-2 2 1 2 2z"></path>
+                    <path d="M12 21c0-1 1-2 2-2s2 1 2 2-1 2-2 2-2-1-2-2z"></path>
+                  </svg>
+                  DETALLES DE LA CONSULTA
+                </div>
+                <div class="field">
+                  <span class="label">Estudio</span>
+                  <span class="value">${consulta.estudio}</span>
+                </div>
+                <div class="field">
+                  <span class="label">Educador/a</span>
+                  <span class="value">${consulta.educador}</span>
+                </div>
+                <div class="field">
+                  <span class="label">Fecha Consulta</span>
+                  <span class="value">${format(new Date(consulta.fechaConsulta), 'dd/MM/yyyy')}</span>
+                </div>
+                <div class="field">
+                  <span class="label">Fecha Control</span>
+                  <span class="value">${format(new Date(consulta.fechaControl), 'dd/MM/yyyy')}</span>
+                </div>
+                <div class="field">
+                  <span class="label">Estado</span>
+                  <span class="value">
+                    <span class="status-badge status-${consulta.estado.toLowerCase()}">${consulta.estado}</span>
+                  </span>
+                </div>
+              </div>
+              
+              <div class="section">
+                <div class="section-title">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14,2 14,8 20,8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10,9 9,9 8,9"></polyline>
+                  </svg>
+                  OBSERVACIONES
+                </div>
+                <div class="observations ${!consulta.observaciones ? 'empty' : ''}">${consulta.observaciones || '_________________________________________________________________\n_________________________________________________________________\n_________________________________________________________________'}</div>
+              </div>
             </div>
-          </div>
-          
-          <div class="section">
-            <div class="section-title">🔬 DETALLES DE LA CONSULTA</div>
-            <div class="field">
-              <span class="label">📊 Estudio:</span>
-              <span class="value">${consulta.estudio}</span>
+            
+            <div class="footer">
+              <div class="footer-left">
+                <p>Sistema SGCM</p>
+              </div>
+              <div class="footer-center">
+                <p>Gestión de Consultas Médicas</p>
+              </div>
+              <div class="footer-right">
+                <p>${format(new Date(), 'dd/MM/yyyy HH:mm')}</p>
+              </div>
             </div>
-            <div class="field">
-              <span class="label">👨‍⚕️ Educador:</span>
-              <span class="value">${consulta.educador}</span>
-            </div>
-            <div class="field">
-              <span class="label">📅 Fecha Consulta:</span>
-              <span class="value">${format(new Date(consulta.fechaConsulta), 'dd/MM/yyyy')}</span>
-            </div>
-            <div class="field">
-              <span class="label">⏰ Fecha Control:</span>
-              <span class="value">${format(new Date(consulta.fechaControl), 'dd/MM/yyyy')}</span>
-            </div>
-            <div class="field">
-              <span class="label">📈 Estado:</span>
-              <span class="value">${consulta.estado}</span>
-            </div>
-          </div>
-          
-          ${consulta.observaciones ? `
-          <div class="section">
-            <div class="section-title">📝 OBSERVACIONES</div>
-            <div class="observations">
-              ${consulta.observaciones}
-            </div>
-          </div>
-          ` : ''}
-          
-          <div class="footer">
-            <p>📱 Compartido desde Sistema CAFF</p>
-            <p>🕐 ${format(new Date(), 'dd/MM/yyyy HH:mm')}</p>
           </div>
         </body>
       </html>
@@ -410,68 +594,148 @@ export function ConsultasClient({ initialConsultas }: ConsultasClientProps) {
   };
   
   const handlePrint = (sectionId: string) => {
-    // Crear el contenido HTML del PDF con el mismo formato que el formulario
+    // Crear el contenido HTML del PDF con diseño optimizado para impresión
     const htmlContent = `
       <!DOCTYPE html>
       <html>
         <head>
           <meta charset="utf-8">
-          <title>Reporte de Consultas Médicas</title>
+          <title>Reporte de Consultas - Sistema SGCM</title>
           <style>
-            body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }
-            .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 20px; }
-            .section { margin-bottom: 25px; }
-            .section-title { font-size: 18px; font-weight: bold; color: #333; margin-bottom: 15px; border-bottom: 1px solid #ccc; padding-bottom: 5px; }
-            .table-container { margin-top: 20px; }
-            table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-            th, td { border: 1px solid #ddd; padding: 8px; text-align: left; font-size: 12px; }
-            th { background-color: #f8f9fa; font-weight: bold; color: #333; }
-            .footer { margin-top: 40px; text-align: center; font-size: 12px; color: #666; border-top: 1px solid #ccc; padding-top: 20px; }
-            .stats { display: flex; justify-content: space-around; margin: 20px 0; padding: 15px; background-color: #f8f9fa; border-radius: 5px; }
-            .stat-item { text-align: center; }
-            .stat-number { font-size: 24px; font-weight: bold; color: #333; }
-            .stat-label { font-size: 12px; color: #666; margin-top: 5px; }
+            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+            
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+            
+            body { 
+              font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; 
+              margin: 0; 
+              line-height: 1.6; 
+              color: #1f2937;
+              background: white;
+              min-height: 100vh;
+            }
+            
+            .container {
+              max-width: 1200px;
+              margin: 0 auto;
+              background: white;
+            }
+            
+            .header { 
+              background: #f8fafc;
+              color: #1f2937;
+              padding: 20px 30px;
+              text-align: center;
+              border-bottom: 2px solid #e5e7eb;
+            }
+            
+            .header h1 { 
+              font-size: 20px; 
+              font-weight: 700; 
+              margin-bottom: 4px;
+              letter-spacing: -0.025em;
+            }
+            
+            .header h2 { 
+              font-size: 14px; 
+              font-weight: 500; 
+              color: #6b7280;
+              margin-bottom: 8px;
+            }
+            
+            .header p { 
+              font-size: 12px; 
+              color: #6b7280;
+              margin-bottom: 2px;
+            }
+            
+            .content {
+              padding: 30px;
+            }
+            
+            table { 
+              width: 100%; 
+              border-collapse: collapse; 
+              margin-top: 20px;
+              background: white;
+              border: 1px solid #e5e7eb;
+            }
+            
+            th, td { 
+              padding: 8px 12px; 
+              text-align: left; 
+              font-size: 11px;
+              border-bottom: 1px solid #f3f4f6;
+              border-right: 1px solid #f3f4f6;
+            }
+            
+            th { 
+              background: #f8fafc;
+              font-weight: 600;
+              color: #374151;
+              text-transform: uppercase;
+              letter-spacing: 0.05em;
+              font-size: 10px;
+            }
+            
+            tr:nth-child(even) {
+              background-color: #f9fafb;
+            }
+            
+            .status-badge {
+              display: inline-block;
+              padding: 2px 6px;
+              border-radius: 8px;
+              font-size: 9px;
+              font-weight: 600;
+              text-transform: uppercase;
+              letter-spacing: 0.05em;
+            }
+            
+            .status-agendada { background: #dbeafe; color: #1e40af; }
+            .status-pendiente { background: #fef3c7; color: #d97706; }
+            .status-completa { background: #d1fae5; color: #047857; }
+            
+            .footer { 
+              background: #f9fafb;
+              padding: 16px 30px;
+              text-align: center;
+              font-size: 11px;
+              color: #6b7280;
+              border-top: 1px solid #e5e7eb;
+            }
+            
+            .footer p {
+              margin-bottom: 2px;
+            }
+            
+            .footer p:last-child {
+              margin-bottom: 0;
+            }
+            
+            @media print {
+              body { background: white; }
+              .container { box-shadow: none; }
+            }
           </style>
         </head>
         <body>
-          <div class="header">
-            <h1>🏥 CENTRO CAFF</h1>
-            <h2>REPORTE DE CONSULTAS MÉDICAS</h2>
-            <p>Fecha de generación: ${format(new Date(), 'dd/MM/yyyy HH:mm')}</p>
-          </div>
-          
-          <div class="section">
-            <div class="section-title">📊 ESTADÍSTICAS GENERALES</div>
-            <div class="stats">
-              <div class="stat-item">
-                <div class="stat-number">${consultas.length}</div>
-                <div class="stat-label">Total Consultas</div>
-              </div>
-              <div class="stat-item">
-                <div class="stat-number">${consultas.filter(c => c.estado === 'Agendada').length}</div>
-                <div class="stat-label">Agendadas</div>
-              </div>
-              <div class="stat-item">
-                <div class="stat-number">${consultas.filter(c => c.estado === 'Pendiente').length}</div>
-                <div class="stat-label">Pendientes</div>
-              </div>
-              <div class="stat-item">
-                <div class="stat-number">${consultas.filter(c => c.estado === 'Completa').length}</div>
-                <div class="stat-label">Completas</div>
-              </div>
+          <div class="container">
+            <div class="header">
+              <h1>SISTEMA SGCM</h1>
+              <h2>REPORTE DE CONSULTAS</h2>
+              <p>Fecha de generación: ${format(new Date(), 'dd/MM/yyyy HH:mm')}</p>
+              <p>Total de consultas filtradas: ${filteredConsultas.length}</p>
             </div>
-          </div>
-          
-          <div class="section">
-            <div class="section-title">📋 LISTADO DE CONSULTAS</div>
-            <div class="table-container">
+            
+            <div class="content">
               <table>
                 <thead>
                   <tr>
                     <th>Paciente</th>
                     <th>Cédula</th>
                     <th>Estudio</th>
-                    <th>Educador</th>
+                    <th>Educador/a</th>
                     <th>F. Consulta</th>
                     <th>F. Control</th>
                     <th>Estado</th>
@@ -479,7 +743,7 @@ export function ConsultasClient({ initialConsultas }: ConsultasClientProps) {
                   </tr>
                 </thead>
                 <tbody>
-                  ${consultas.map(consulta => `
+                  ${filteredConsultas.map(consulta => `
                     <tr>
                       <td>${consulta.nombre}</td>
                       <td>${consulta.cedula}</td>
@@ -487,18 +751,27 @@ export function ConsultasClient({ initialConsultas }: ConsultasClientProps) {
                       <td>${consulta.educador}</td>
                       <td>${format(new Date(consulta.fechaConsulta), 'dd/MM/yyyy')}</td>
                       <td>${format(new Date(consulta.fechaControl), 'dd/MM/yyyy')}</td>
-                      <td>${consulta.estado}</td>
+                      <td>
+                        <span class="status-badge status-${consulta.estado.toLowerCase()}">${consulta.estado}</span>
+                      </td>
                       <td>${consulta.observaciones || '-'}</td>
                     </tr>
                   `).join('')}
                 </tbody>
               </table>
             </div>
-          </div>
-          
-          <div class="footer">
-            <p>📱 Generado desde Sistema CAFF</p>
-            <p>🕐 ${format(new Date(), 'dd/MM/yyyy HH:mm')}</p>
+            
+            <div class="footer">
+              <div class="footer-left">
+                <p>Sistema SGCM</p>
+              </div>
+              <div class="footer-center">
+                <p>Reporte de Consultas</p>
+              </div>
+              <div class="footer-right">
+                <p>${format(new Date(), 'dd/MM/yyyy HH:mm')}</p>
+              </div>
+            </div>
           </div>
         </body>
       </html>
@@ -549,86 +822,120 @@ export function ConsultasClient({ initialConsultas }: ConsultasClientProps) {
         
 
         
-                 <Card className="print-hidden border-2 border-gray-100 shadow-sm">
+        <Card className="print-hidden border-2 border-gray-100 shadow-sm">
           <CardHeader className="p-4 pb-3">
-            <CardTitle className="text-base font-semibold text-gray-800 flex items-center gap-2">
-              <Search className="h-5 w-5" />
-              Filtros de Búsqueda
+            <CardTitle className="text-base font-semibold text-gray-800 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Search className="h-5 w-5" />
+                Búsqueda
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-gray-500">Filtros</span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setFiltersExpanded(!filtersExpanded)}
+                  className="p-2 h-8 w-8"
+                >
+                  <ChevronDown className={cn(
+                    "h-4 w-4 transition-transform duration-200",
+                    filtersExpanded && "rotate-180"
+                  )} />
+                </Button>
+              </div>
             </CardTitle>
           </CardHeader>
           <CardContent className="p-4 pt-0">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                  <User className="h-4 w-4" />
-                  Paciente
-                </label>
-                <Input 
-                  placeholder="Buscar por nombre..."
-                  value={patientFilter}
-                  onChange={e => setPatientFilter(e.target.value)}
-                  className="h-10"
-                />
+                        {/* Vista contraída */}
+            {!filtersExpanded && (
+              <div className="space-y-3">
+                <div className="space-y-2">
+                  <Input 
+                    placeholder={globalSearchText}
+                    value={patientFilter}
+                    onChange={e => setPatientFilter(e.target.value)}
+                    className="h-10"
+                  />
+                </div>
+ 
               </div>
-              
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                  <UserCheck className="h-4 w-4" />
-                  Educador
-                </label>
-                <Input
-                  placeholder="Buscar por educador..."
-                  value={educatorFilter}
-                  onChange={e => setEducatorFilter(e.target.value)}
-                  className="h-10"
-                />
+            )}
+
+            {/* Vista expandida */}
+            {filtersExpanded && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                    <User className="h-4 w-4" />
+                    Paciente
+                  </label>
+                  <Input 
+                    placeholder="Buscar por nombre..."
+                    value={patientFilter}
+                    onChange={e => setPatientFilter(e.target.value)}
+                    className="h-10"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                    <UserCheck className="h-4 w-4" />
+                    Educador/a
+                  </label>
+                  <Input
+                    placeholder="Buscar por educador/a..."
+                    value={educatorFilter}
+                    onChange={e => setEducatorFilter(e.target.value)}
+                    className="h-10"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                    <Filter className="h-4 w-4" />
+                    Estado
+                  </label>
+                  <Select value={statusFilter} onValueChange={setStatusFilter}>
+                    <SelectTrigger className="h-10">
+                      <SelectValue placeholder="Seleccionar estado" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="todos">Todos los Estados</SelectItem>
+                      <SelectItem value="Agendada">🟦 Agendada</SelectItem>
+                      <SelectItem value="Pendiente">🟨 Pendiente</SelectItem>
+                      <SelectItem value="Completa">🟩 Completa</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                    <FileText className="h-4 w-4" />
+                    Estudio
+                  </label>
+                  <Select value={studyFilter} onValueChange={setStudyFilter}>
+                    <SelectTrigger className="h-10">
+                      <SelectValue placeholder="Seleccionar estudio" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {studies.map(study => (
+                        <SelectItem key={study} value={study}>
+                          {study === 'todos' ? 'Todos los Estudios' : study}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div className="sm:col-span-2 lg:col-span-1 space-y-2">
+                  <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                    <Calendar className="h-4 w-4" />
+                    Rango de Fechas
+                  </label>
+                  <DateRangePicker date={dateFilter} onDateChange={setDateFilter} />
+                </div>
               </div>
-              
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                  <Filter className="h-4 w-4" />
-                  Estado
-                </label>
-                <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger className="h-10">
-                    <SelectValue placeholder="Seleccionar estado" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="todos">Todos los Estados</SelectItem>
-                    <SelectItem value="Agendada">🟦 Agendada</SelectItem>
-                    <SelectItem value="Pendiente">🟨 Pendiente</SelectItem>
-                    <SelectItem value="Completa">🟩 Completa</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                  <FileText className="h-4 w-4" />
-                  Estudio
-                </label>
-                <Select value={studyFilter} onValueChange={setStudyFilter}>
-                  <SelectTrigger className="h-10">
-                    <SelectValue placeholder="Seleccionar estudio" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {studies.map(study => (
-                      <SelectItem key={study} value={study}>
-                        {study === 'todos' ? 'Todos los Estudios' : study}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="sm:col-span-2 lg:col-span-1 space-y-2">
-                <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                  <Calendar className="h-4 w-4" />
-                  Rango de Fechas
-                </label>
-                <DateRangePicker date={dateFilter} onDateChange={setDateFilter} />
-              </div>
-            </div>
+            )}
           </CardContent>
         </Card>
 

@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Area, AreaChart, ResponsiveContainer, Tooltip, Bar, BarChart, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -210,6 +210,7 @@ type DashboardClientProps = {
 
 export function DashboardClient({ initialConsultas }: DashboardClientProps) {
   const router = useRouter();
+  const [selectedDay, setSelectedDay] = useState<Date | undefined>(new Date());
   const consultas = initialConsultas;
 
   const totalConsultas = consultas.length;
@@ -229,6 +230,14 @@ export function DashboardClient({ initialConsultas }: DashboardClientProps) {
 
   // Consultas del mes actual
   const currentMonthConsultas = useMemo(() => getCurrentMonthConsultas(consultas), [consultas]);
+  
+  // Obtener consultas del día seleccionado
+  const consultasDelDiaSeleccionado = useMemo(() => {
+    if (!selectedDay) return [];
+    return currentMonthConsultas.filter(consulta => 
+      format(new Date(consulta.fechaConsulta), 'yyyy-MM-dd') === format(selectedDay, 'yyyy-MM-dd')
+    );
+  }, [selectedDay, currentMonthConsultas]);
 
   // Funciones de navegación
   const navigateToConsultas = (statusFilter: string) => {
@@ -363,8 +372,8 @@ export function DashboardClient({ initialConsultas }: DashboardClientProps) {
             <div className="lg:col-span-2">
               <CalendarComponent
                 mode="single"
-                selected={new Date()}
-                onSelect={() => {}}
+                selected={selectedDay}
+                onSelect={setSelectedDay}
                 className="rounded-md border bg-white"
                 locale={es}
                 components={{
@@ -373,48 +382,50 @@ export function DashboardClient({ initialConsultas }: DashboardClientProps) {
                     const consultasDelDia = currentMonthConsultas.filter(consulta => 
                       format(new Date(consulta.fechaConsulta), 'yyyy-MM-dd') === fechaStr
                     );
+                    const isSelected = selectedDay && format(dayDate, 'yyyy-MM-dd') === format(selectedDay, 'yyyy-MM-dd');
 
                     return (
-                      <div className="relative w-full h-full min-h-[40px] p-1">
-                        {/* Número del día */}
-                        <div className="text-sm font-medium text-gray-900 mb-1">
-                          {format(dayDate, 'd')}
-                        </div>
-                        
-                        {/* Indicadores de consultas */}
-                        {consultasDelDia.length > 0 && (
-                          <div className="space-y-1">
-                            {consultasDelDia.slice(0, 3).map((consulta, index) => (
-                              <div
-                                key={consulta.id}
-                                className={cn(
-                                  'h-1.5 rounded-full opacity-80 cursor-pointer hover:opacity-100 transition-opacity',
-                                  consulta.estado === 'Agendada' && 'bg-blue-500',
-                                  consulta.estado === 'Pendiente' && 'bg-yellow-500',
-                                  consulta.estado === 'Completa' && 'bg-green-500'
+                      <div className="relative w-full h-full">
+                        <div 
+                          className="w-full h-full cursor-pointer"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedDay(dayDate);
+                          }}
+                        >
+                          <div className="relative w-full h-full min-h-[40px] p-1">
+                            {/* Número del día */}
+                            <div className={cn(
+                              "text-sm font-medium mb-1",
+                              isSelected ? "text-white" : "text-gray-900"
+                            )}>
+                              {format(dayDate, 'd')}
+                            </div>
+                            
+                            {/* Indicadores de consultas (solo visuales, no clickeables) */}
+                            {consultasDelDia.length > 0 && (
+                              <div className="space-y-1">
+                                {consultasDelDia.slice(0, 3).map((consulta, index) => (
+                                  <div
+                                    key={consulta.id}
+                                    className={cn(
+                                      'h-1.5 rounded-full opacity-80 transition-opacity',
+                                      consulta.estado === 'Agendada' && 'bg-blue-500',
+                                      consulta.estado === 'Pendiente' && 'bg-yellow-500',
+                                      consulta.estado === 'Completa' && 'bg-green-500'
+                                    )}
+                                    title={`${consulta.nombre} - ${consulta.estado}`}
+                                  />
+                                ))}
+                                {consultasDelDia.length > 3 && (
+                                  <div className="h-1.5 rounded-full bg-gray-400 opacity-60 text-[6px] text-white flex items-center justify-center">
+                                    +{consultasDelDia.length - 3}
+                                  </div>
                                 )}
-                                title={`${consulta.nombre} - ${consulta.estado}`}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleEditConsulta(consulta);
-                                }}
-                              />
-                            ))}
-                            {consultasDelDia.length > 3 && (
-                              <div className="h-1.5 rounded-full bg-gray-400 opacity-60 text-[6px] text-white flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity"
-                                   title={`${consultasDelDia.length - 3} consultas más`}
-                                   onClick={(e) => {
-                                     e.stopPropagation();
-                                     // Si hay más de 3 consultas, abrir la primera
-                                     if (consultasDelDia.length > 3) {
-                                       handleEditConsulta(consultasDelDia[0]);
-                                     }
-                                   }}>
-                                +{consultasDelDia.length - 3}
                               </div>
                             )}
                           </div>
-                        )}
+                        </div>
                       </div>
                     );
                   },
@@ -422,32 +433,57 @@ export function DashboardClient({ initialConsultas }: DashboardClientProps) {
               />
             </div>
 
-            {/* Resumen del mes */}
+            {/* Consultas del día seleccionado */}
             <div className="space-y-4">
               <h3 className="font-semibold text-gray-700">
-                Resumen del Mes
+                {selectedDay ? format(selectedDay, 'EEEE, d MMMM yyyy', { locale: es }) : 'Selecciona una fecha'}
               </h3>
               
-              <div className="space-y-3">
-                <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
-                  <span className="text-sm font-medium text-blue-900">Agendadas</span>
-                  <span className="text-lg font-bold text-blue-700">
-                    {currentMonthConsultas.filter(c => c.estado === 'Agendada').length}
-                  </span>
+              {!selectedDay ? (
+                <div className="text-center py-8">
+                  <CalendarDays className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+                  <p className="text-gray-500 text-sm">Toca un día en el calendario para ver las consultas</p>
                 </div>
-                <div className="flex items-center justify-between p-3 bg-yellow-50 rounded-lg">
-                  <span className="text-sm font-medium text-yellow-900">Pendientes</span>
-                  <span className="text-lg font-bold text-yellow-700">
-                    {currentMonthConsultas.filter(c => c.estado === 'Pendiente').length}
-                  </span>
+              ) : consultasDelDiaSeleccionado.length === 0 ? (
+                <p className="text-gray-500 text-sm">No hay consultas programadas para este día.</p>
+              ) : (
+                <div className="space-y-3">
+                  <p className="text-xs text-gray-600 bg-blue-50 p-2 rounded-md">
+                    💡 Toca una consulta para editarla
+                  </p>
+                  <div className="space-y-2 max-h-96 overflow-y-auto">
+                    {consultasDelDiaSeleccionado.map((consulta) => (
+                      <div
+                        key={consulta.id}
+                        className={cn(
+                          'p-3 rounded-lg border cursor-pointer transition-all hover:shadow-md',
+                          'bg-white border-l-4',
+                          consulta.estado === 'Agendada' && 'border-l-blue-500',
+                          consulta.estado === 'Pendiente' && 'border-l-yellow-500',
+                          consulta.estado === 'Completa' && 'border-l-green-500'
+                        )}
+                        onClick={() => handleEditConsulta(consulta)}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-medium text-gray-900 truncate">{consulta.nombre}</h4>
+                            <p className="text-sm text-gray-600">{consulta.estudio}</p>
+                            <p className="text-xs text-gray-500">{consulta.educador}</p>
+                          </div>
+                          <div className={cn(
+                            'px-2 py-1 rounded-full text-xs font-medium text-white',
+                            consulta.estado === 'Agendada' && 'bg-blue-500',
+                            consulta.estado === 'Pendiente' && 'bg-yellow-500',
+                            consulta.estado === 'Completa' && 'bg-green-500'
+                          )}>
+                            {consulta.estado}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
-                  <span className="text-sm font-medium text-green-900">Completas</span>
-                  <span className="text-lg font-bold text-green-700">
-                    {currentMonthConsultas.filter(c => c.estado === 'Completa').length}
-                  </span>
-                </div>
-              </div>
+              )}
             </div>
           </div>
         </CardContent>

@@ -1,26 +1,43 @@
-import * as React from "react"
+'use client';
 
-const MOBILE_BREAKPOINT = 768
+import { useEffect, useState } from 'react';
 
-export function useIsMobile() {
-  const [isMobile, setIsMobile] = React.useState<boolean>(false)
-  const [isClient, setIsClient] = React.useState<boolean>(false)
+export function useMobile() {
+  const [isMobile, setIsMobile] = useState(false);
 
-  React.useEffect(() => {
-    setIsClient(true)
-    
-    const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`)
-    const onChange = () => {
-      setIsMobile(window.innerWidth < MOBILE_BREAKPOINT)
+  useEffect(() => {
+    const checkIsMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkIsMobile();
+    window.addEventListener('resize', checkIsMobile);
+
+    return () => window.removeEventListener('resize', checkIsMobile);
+  }, []);
+
+  return isMobile;
+}
+
+// Hook para prevenir auto-focus en móvil
+export function usePreventAutoFocus() {
+  const isMobile = useMobile();
+
+  useEffect(() => {
+    if (isMobile) {
+      // Remover el foco de cualquier elemento activo cuando se monta el componente
+      const removeFocus = () => {
+        if (document.activeElement instanceof HTMLElement) {
+          document.activeElement.blur();
+        }
+      };
+
+      // Ejecutar después de un pequeño delay para asegurar que el DOM esté listo
+      const timeoutId = setTimeout(removeFocus, 100);
+
+      return () => clearTimeout(timeoutId);
     }
-    
-    // Set initial value
-    setIsMobile(window.innerWidth < MOBILE_BREAKPOINT)
-    
-    mql.addEventListener("change", onChange)
-    return () => mql.removeEventListener("change", onChange)
-  }, [])
+  }, [isMobile]);
 
-  // Return false during SSR to prevent hydration mismatch
-  return isClient ? isMobile : false
+  return isMobile;
 }

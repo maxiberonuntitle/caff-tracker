@@ -6,7 +6,7 @@ import { NavigationLoading } from '@/components/NavigationLoading';
 
 export const metadata: Metadata = {
   title: 'Gestión de Consultas Médicas',
-  description: 'Seguimiento de consultas médicas para el Centro CAFF Montevideo',
+  description: 'Seguimiento de consultas médicas para el Sistema SGCM',
   icons: {
     icon: '/favicon.svg',
   },

@@ -31,6 +31,7 @@ const getStatusColor = (estado: string) => {
 
 export function ConsultasCalendar({ consultas, onAddConsulta, onEditConsulta }: ConsultasCalendarProps) {
   const [date, setDate] = useState<Date | undefined>(new Date());
+  const [selectedDay, setSelectedDay] = useState<Date | undefined>(new Date());
 
   // Agrupar consultas por fecha
   const consultasPorFecha = consultas.reduce((acc, consulta) => {
@@ -46,15 +47,19 @@ export function ConsultasCalendar({ consultas, onAddConsulta, onEditConsulta }: 
   const renderDayContent = (day: Date) => {
     const fechaStr = format(day, 'yyyy-MM-dd');
     const consultasDelDia = consultasPorFecha[fechaStr] || [];
+    const isSelected = selectedDay && isSameDay(day, selectedDay);
 
     return (
       <div className="relative w-full h-full">
         {/* Número del día siempre visible */}
-        <div className="absolute top-1 left-1 text-xs font-medium text-gray-900 z-10">
+        <div className={cn(
+          "absolute top-1 left-1 text-xs font-medium z-10",
+          isSelected ? "text-white" : "text-gray-900"
+        )}>
           {format(day, 'd')}
         </div>
         
-        {/* Indicadores de consultas */}
+        {/* Indicadores de consultas (solo visuales, no clickeables) */}
         {consultasDelDia.length > 0 && (
           <div className="absolute bottom-1 left-1 right-1">
             <div className="flex flex-col gap-0.5">
@@ -62,14 +67,10 @@ export function ConsultasCalendar({ consultas, onAddConsulta, onEditConsulta }: 
                 <div
                   key={consulta.id}
                   className={cn(
-                    'h-1.5 rounded-full opacity-80 cursor-pointer hover:opacity-100 transition-opacity',
+                    'h-1.5 rounded-full opacity-80 transition-opacity',
                     getStatusColor(consulta.estado)
                   )}
                   title={`${consulta.nombre} - ${consulta.estado}`}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onEditConsulta(consulta);
-                  }}
                 />
               ))}
               {consultasDelDia.length > 2 && (
@@ -85,8 +86,8 @@ export function ConsultasCalendar({ consultas, onAddConsulta, onEditConsulta }: 
   };
 
   // Obtener consultas del día seleccionado
-  const consultasDelDiaSeleccionado = date 
-    ? consultasPorFecha[format(date, 'yyyy-MM-dd')] || []
+  const consultasDelDiaSeleccionado = selectedDay 
+    ? consultasPorFecha[format(selectedDay, 'yyyy-MM-dd')] || []
     : [];
 
   return (
@@ -112,13 +113,21 @@ export function ConsultasCalendar({ consultas, onAddConsulta, onEditConsulta }: 
             <div className="lg:col-span-2">
               <Calendar
                 mode="single"
-                selected={date}
-                onSelect={setDate}
+                selected={selectedDay}
+                onSelect={setSelectedDay}
                 className="rounded-md border bg-white"
                 components={{
                   DayContent: ({ date: dayDate }) => (
                     <div className="relative w-full h-full">
-                      {renderDayContent(dayDate)}
+                      <div 
+                    className="w-full h-full cursor-pointer"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedDay(dayDate);
+                    }}
+                  >
+                    {renderDayContent(dayDate)}
+                  </div>
                     </div>
                   ),
                 }}
@@ -129,14 +138,23 @@ export function ConsultasCalendar({ consultas, onAddConsulta, onEditConsulta }: 
             {/* Consultas del día seleccionado */}
             <div className="space-y-4">
               <h3 className="font-semibold text-gray-700">
-                {date ? format(date, 'EEEE, d MMMM yyyy', { locale: es }) : 'Selecciona una fecha'}
+                {selectedDay ? format(selectedDay, 'EEEE, d MMMM yyyy', { locale: es }) : 'Selecciona una fecha'}
               </h3>
               
-              {consultasDelDiaSeleccionado.length === 0 ? (
+              {!selectedDay ? (
+                <div className="text-center py-8">
+                  <CalendarDays className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+                  <p className="text-gray-500 text-sm">Toca un día en el calendario para ver las consultas</p>
+                </div>
+              ) : consultasDelDiaSeleccionado.length === 0 ? (
                 <p className="text-gray-500 text-sm">No hay consultas programadas para este día.</p>
               ) : (
-                <div className="space-y-2 max-h-96 overflow-y-auto">
-                  {consultasDelDiaSeleccionado.map((consulta) => (
+                <div className="space-y-3">
+                  <p className="text-xs text-gray-600 bg-blue-50 p-2 rounded-md">
+                    💡 Toca una consulta para editarla
+                  </p>
+                  <div className="space-y-2 max-h-96 overflow-y-auto">
+                    {consultasDelDiaSeleccionado.map((consulta) => (
                     <div
                       key={consulta.id}
                       className={cn(
@@ -163,6 +181,7 @@ export function ConsultasCalendar({ consultas, onAddConsulta, onEditConsulta }: 
                       </div>
                     </div>
                   ))}
+                  </div>
                 </div>
               )}
             </div>

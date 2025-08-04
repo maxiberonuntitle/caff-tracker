@@ -18,12 +18,12 @@ export default function ComoFuncionaPage() {
     {
       icon: <BarChart3 className="h-6 w-6 text-green-500" />,
       title: 'Tabla de Consultas del Mes',
-      description: 'Tabla completa con todas las consultas del mes actual, ordenable por cualquier columna. Muestra paciente, cédula, estudio, educador, fechas y estado.',
+      description: 'Tabla completa con todas las consultas del mes actual, ordenable por cualquier columna. Muestra paciente, cédula, estudio, educador/a, fechas y estado.',
     },
     {
       icon: <CalendarPlus className="h-6 w-6 text-emerald-500" />,
       title: 'Gestión de Consultas',
-      description: 'Registra nuevas consultas con datos completos: paciente, cédula, estudio, educador, fechas de consulta y control, observaciones y estado.',
+              description: 'Registra nuevas consultas con datos completos: paciente, cédula, estudio, educador/a, fechas de consulta y control, observaciones y estado.',
     },
     {
       icon: <Clock className="h-6 w-6 text-yellow-500" />,
@@ -43,7 +43,7 @@ export default function ComoFuncionaPage() {
     {
       icon: <Search className="h-6 w-6 text-indigo-500" />,
       title: 'Búsqueda y Filtros Avanzados',
-      description: 'Filtra por paciente, educador, estado, tipo de estudio y rango de fechas. Búsqueda en tiempo real con resultados instantáneos.',
+              description: 'Filtra por paciente, educador/a, estado, tipo de estudio y rango de fechas. Búsqueda en tiempo real con resultados instantáneos.',
     },
     {
       icon: <Filter className="h-6 w-6 text-orange-500" />,
@@ -72,8 +72,8 @@ export default function ComoFuncionaPage() {
     },
     {
       icon: <Users className="h-6 w-6 text-lime-500" />,
-      title: 'Seguimiento por Educador',
-      description: 'Filtra y analiza consultas por educador específico. Dashboard muestra métricas individuales y de equipo.',
+              title: 'Seguimiento por Educador/a',
+        description: 'Filtra y analiza consultas por educador/a específico. Dashboard muestra métricas individuales y de equipo.',
     },
     {
       icon: <Zap className="h-6 w-6 text-amber-500" />,
@@ -106,7 +106,7 @@ export default function ComoFuncionaPage() {
     {
       step: "5", 
       title: "Filtros y Búsqueda",
-      description: "Encuentra consultas específicas usando filtros por paciente, educador, estado o fechas."
+              description: "Encuentra consultas específicas usando filtros por paciente, educador/a, estado o fechas."
     },
     {
       step: "6",

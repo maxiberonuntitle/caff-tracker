@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage, FormWrapper } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -142,14 +142,95 @@ export function ConsultaForm({ isOpen, setIsOpen, onSubmit, onDelete, onShare, o
 
   // Reset form when initialData changes
   useEffect(() => {
-    if (initialData) {
-      form.reset({
+    if (initialData && isOpen) {
+      console.log('Reseteando formulario con datos:', initialData);
+      
+      // Asegurar que las fechas se parseen correctamente
+      let fechaConsulta: Date;
+      let fechaControl: Date;
+      
+      try {
+        fechaConsulta = typeof initialData.fechaConsulta === 'string' 
+          ? parseISO(initialData.fechaConsulta) 
+          : new Date(initialData.fechaConsulta);
+      } catch (error) {
+        console.error('Error parsing fechaConsulta:', error);
+        fechaConsulta = new Date();
+      }
+      
+      try {
+        fechaControl = typeof initialData.fechaControl === 'string' 
+          ? parseISO(initialData.fechaControl) 
+          : new Date(initialData.fechaControl);
+      } catch (error) {
+        console.error('Error parsing fechaControl:', error);
+        fechaControl = new Date();
+      }
+
+      const formData = {
         ...initialData,
-        fechaConsulta: parseISO(initialData.fechaConsulta),
-        fechaControl: parseISO(initialData.fechaControl),
+        fechaConsulta,
+        fechaControl,
+      };
+      
+      console.log('Datos procesados para el formulario:', formData);
+      
+      form.reset(formData);
+      
+      // Remover el foco después del reset para evitar auto-selección
+      setTimeout(() => {
+        if (document.activeElement instanceof HTMLElement) {
+          document.activeElement.blur();
+        }
+      }, 150);
+    } else if (!initialData && isOpen) {
+      // Reset to empty form for new consulta
+      console.log('Reseteando formulario para nueva consulta');
+      form.reset({
+        nombre: '',
+        cedula: '',
+        estudio: '',
+        educador: '',
+        observaciones: '',
+        estado: 'Agendada',
+        fechaConsulta: undefined,
+        fechaControl: undefined,
       });
     }
-  }, [initialData, form]);
+  }, [initialData, isOpen, form]);
+
+  // Reset form when opening without initialData (new consulta)
+  useEffect(() => {
+    if (isOpen && !initialData) {
+      console.log('Abriendo formulario para nueva consulta');
+      form.reset({
+        nombre: '',
+        cedula: '',
+        estudio: '',
+        educador: '',
+        observaciones: '',
+        estado: 'Agendada',
+        fechaConsulta: undefined,
+        fechaControl: undefined,
+      });
+    }
+  }, [isOpen, initialData, form]);
+
+  // Prevenir auto-focus cuando el diálogo se abre
+  useEffect(() => {
+    if (isOpen) {
+      const removeFocus = () => {
+        if (document.activeElement instanceof HTMLElement) {
+          document.activeElement.blur();
+        }
+      };
+
+      // Ejecutar después de que el diálogo se abra completamente
+      const timeoutId = setTimeout(removeFocus, 300);
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [isOpen]);
 
   const handleFormSubmit = (values: z.infer<typeof consultaSchema>) => {
     const consultaData: Omit<Consulta, 'id'> | Consulta = {
@@ -168,7 +249,7 @@ export function ConsultaForm({ isOpen, setIsOpen, onSubmit, onDelete, onShare, o
   
   const handleOpenChange = (open: boolean) => {
     if (!open) {
-      // Reset form when closing
+      // Reset form when closing - clear all data
       form.reset({
         nombre: '',
         cedula: '',
@@ -179,6 +260,13 @@ export function ConsultaForm({ isOpen, setIsOpen, onSubmit, onDelete, onShare, o
         fechaConsulta: undefined,
         fechaControl: undefined,
       });
+      
+      // Clear any focus to prevent issues
+      setTimeout(() => {
+        if (document.activeElement instanceof HTMLElement) {
+          document.activeElement.blur();
+        }
+      }, 100);
     }
     setIsOpen(open);
   }
@@ -209,7 +297,7 @@ export function ConsultaForm({ isOpen, setIsOpen, onSubmit, onDelete, onShare, o
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-4">
+          <FormWrapper onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-4">
             <div className="bg-white/60 backdrop-blur-sm rounded-lg p-3 border border-gray-200 shadow-sm">
               <FormField
                 control={form.control}
@@ -326,7 +414,6 @@ export function ConsultaForm({ isOpen, setIsOpen, onSubmit, onDelete, onShare, o
                               field.onChange(date);
                               setFechaConsultaOpen(false);
                             }}
-                            initialFocus
                             className="bg-white"
                             locale={es}
                           />
@@ -368,7 +455,6 @@ export function ConsultaForm({ isOpen, setIsOpen, onSubmit, onDelete, onShare, o
                               field.onChange(date);
                               setFechaControlOpen(false);
                             }}
-                            initialFocus
                             className="bg-white"
                             locale={es}
                           />
@@ -568,7 +654,7 @@ export function ConsultaForm({ isOpen, setIsOpen, onSubmit, onDelete, onShare, o
                 </div>
               </div>
             </DialogFooter>
-          </form>
+          </FormWrapper>
         </Form>
       </DialogContent>
     </Dialog>

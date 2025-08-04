@@ -77,7 +77,7 @@ export function Navbar({ onNewConsulta }: NavbarProps) {
                    "font-semibold transition-all duration-300",
                    isScrolled ? "text-base text-gray-900" : "text-lg text-white drop-shadow-lg"
                  )}>
-                   CAFF
+                   SGCM
                  </h1>
                  <p className={cn(
                    "text-xs transition-all duration-300",
