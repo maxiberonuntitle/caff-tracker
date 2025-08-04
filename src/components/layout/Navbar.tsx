@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils';
 import { ContentContainer } from './ContentContainer';
 
 const menuItems = [
-  { href: '/', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/', label: 'Inicio', icon: LayoutDashboard },
   { href: '/consultas', label: 'Gestión de Consultas', icon: ClipboardList },
   { href: '/como-funciona', label: '¿Cómo funciona?', icon: Info },
 ];

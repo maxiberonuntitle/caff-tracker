@@ -204,11 +204,11 @@ const StatCard = ({
   );
 };
 
-type DashboardClientProps = {
+type InicioClientProps = {
     initialConsultas: Consulta[];
 }
 
-export function DashboardClient({ initialConsultas }: DashboardClientProps) {
+export function InicioClient({ initialConsultas }: InicioClientProps) {
   const router = useRouter();
   const [selectedDay, setSelectedDay] = useState<Date | undefined>(new Date());
   const consultas = initialConsultas;
@@ -253,12 +253,12 @@ export function DashboardClient({ initialConsultas }: DashboardClientProps) {
   };
 
   const handleEditConsulta = (consulta: Consulta) => {
-    console.log('Dashboard: Editing consulta:', consulta);
+    console.log('Inicio: Editing consulta:', consulta);
     router.push(`/consultas?edit=${consulta.id}`);
   };
 
   const handleDeleteConsulta = (id: string) => {
-    // En el dashboard, redirigir a consultas para eliminar
+    // En el inicio, redirigir a consultas para eliminar
     router.push('/consultas');
   };
 
@@ -266,7 +266,7 @@ export function DashboardClient({ initialConsultas }: DashboardClientProps) {
     <div className="space-y-8 sm:space-y-10">
       <div className="text-center mb-8 pt-4 md:pt-0">
         <h1 className="text-2xl md:text-2xl lg:text-2xl font-bold tracking-tight font-headline text-gray-900 mb-2">
-          Dashboard
+          Inicio
         </h1>
         <div className="w-24 h-1 bg-gradient-to-r from-primary to-primary/60 mx-auto mt-4 rounded-full"></div>
       </div>

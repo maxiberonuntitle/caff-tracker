@@ -17,7 +17,7 @@ export function Footer() {
   const quickLinks = [
     {
       icon: <Home className="h-4 w-4" />,
-      label: 'Dashboard',
+      label: 'Inicio',
       href: '/',
       description: 'Vista general del sistema'
     },

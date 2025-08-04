@@ -7,7 +7,7 @@ export default function ComoFuncionaPage() {
   const features = [
     {
       icon: <ClipboardList className="h-6 w-6 text-primary" />,
-      title: 'Dashboard Interactivo',
+      title: 'Inicio Interactivo',
       description: 'Vista general con métricas en tiempo real: total de consultas, pendientes, completas y agendadas. Incluye gráficos de tendencias y tasas de completación.',
     },
     {
@@ -73,12 +73,12 @@ export default function ComoFuncionaPage() {
     {
       icon: <Users className="h-6 w-6 text-lime-500" />,
               title: 'Seguimiento por Educador/a',
-        description: 'Filtra y analiza consultas por educador/a específico. Dashboard muestra métricas individuales y de equipo.',
+        description: 'Filtra y analiza consultas por educador/a específico. Inicio muestra métricas individuales y de equipo.',
     },
     {
       icon: <Zap className="h-6 w-6 text-amber-500" />,
       title: 'Actualización en Tiempo Real',
-      description: 'Datos sincronizados automáticamente. Cambios reflejados inmediatamente en dashboard, calendario y tablas.',
+      description: 'Datos sincronizados automáticamente. Cambios reflejados inmediatamente en inicio, calendario y tablas.',
     }
   ];
 
@@ -90,7 +90,7 @@ export default function ComoFuncionaPage() {
     },
     {
       step: "2", 
-      title: "Dashboard General",
+      title: "Inicio General",
       description: "Revisa métricas del día: consultas pendientes, completadas, agendadas y tendencias del mes."
     },
     {
