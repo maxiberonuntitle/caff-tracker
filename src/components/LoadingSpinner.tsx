@@ -1,14 +1,16 @@
 import { Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
+type LoadingSpinnerSize = 'sm' | 'md' | 'lg' | 'xl';
+
 interface LoadingSpinnerProps {
-  size?: 'sm' | 'md' | 'lg' | 'xl';
+  size?: LoadingSpinnerSize;
   className?: string;
   text?: string;
 }
 
 export function LoadingSpinner({ size = 'md', className, text }: LoadingSpinnerProps) {
-  const sizeClasses = {
+  const sizeClasses: Record<LoadingSpinnerSize, string> = {
     sm: 'h-4 w-4',
     md: 'h-6 w-6',
     lg: 'h-8 w-8',

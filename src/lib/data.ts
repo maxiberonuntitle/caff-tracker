@@ -7,11 +7,22 @@ import type { Consulta } from './types';
 export async function getConsultas(): Promise<Consulta[]> {
     try {
         console.log('🔍 Iniciando consulta a Firebase...');
-        const snapshot = await getDocs(collection(db, 'consultas'));
+        console.log('📊 Firebase db instance:', !!db);
+        
+        if (!db) {
+            console.error('❌ Firebase db instance is not available');
+            return [];
+        }
+        
+        const consultasRef = collection(db, 'consultas');
+        console.log('📋 Collection reference created');
+        
+        const snapshot = await getDocs(consultasRef);
         console.log(`📊 Documentos encontrados: ${snapshot.docs.length}`);
         
         const consultas: Consulta[] = snapshot.docs.map(doc => {
             const data = doc.data();
+            console.log(`📄 Processing document ${doc.id}:`, data);
 
             const toSafeDate = (value: any): Date => {
                 if (value instanceof Timestamp) {
@@ -24,6 +35,7 @@ export async function getConsultas(): Promise<Consulta[]> {
                     }
                 }
                 // Return a default date if the value is invalid or missing
+                console.warn(`⚠️ Invalid date value for document ${doc.id}:`, value);
                 return new Date(); 
             };
 
@@ -38,7 +50,7 @@ export async function getConsultas(): Promise<Consulta[]> {
             const validEstados = ['Agendada', 'Pendiente', 'Completa'];
             const estado = validEstados.includes(data.estado) ? data.estado : 'Pendiente';
 
-            return {
+            const consulta: Consulta = {
                 id: doc.id,
                 nombre,
                 cedula,
@@ -49,6 +61,9 @@ export async function getConsultas(): Promise<Consulta[]> {
                 fechaConsulta: toSafeDate(data.fechaConsulta).toISOString(),
                 fechaControl: toSafeDate(data.fechaControl).toISOString(),
             };
+            
+            console.log(`✅ Processed consulta ${doc.id}:`, consulta);
+            return consulta;
         });
 
         // Sort by most recent fechaConsulta
@@ -64,9 +79,12 @@ export async function getConsultas(): Promise<Consulta[]> {
         console.error("Error details:", {
             message: error instanceof Error ? error.message : 'Unknown error',
             code: (error as any)?.code,
-            stack: error instanceof Error ? error.stack : undefined
+            stack: error instanceof Error ? error.stack : undefined,
+            name: error instanceof Error ? error.name : 'Unknown'
         });
+        
         // Return empty array instead of throwing to prevent app crashes
+        console.log("🔄 Returning empty array to prevent app crash");
         return [];
     }
 }

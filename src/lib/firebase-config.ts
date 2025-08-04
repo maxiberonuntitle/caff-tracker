@@ -11,13 +11,33 @@ const firebaseConfig = {
   "messagingSenderId": process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || "381575869719",
 };
 
+// Validate Firebase configuration
+const validateFirebaseConfig = (config: any) => {
+  const requiredFields = ['projectId', 'appId', 'apiKey', 'authDomain'];
+  const missingFields = requiredFields.filter(field => !config[field]);
+  
+  if (missingFields.length > 0) {
+    console.error('❌ Firebase configuration missing required fields:', missingFields);
+    return false;
+  }
+  
+  return true;
+};
+
 // Initialize Firebase
 let app: FirebaseApp;
 let db: Firestore;
 
 try {
+  if (!validateFirebaseConfig(firebaseConfig)) {
+    throw new Error('Invalid Firebase configuration');
+  }
+
+  console.log('🔧 Initializing Firebase...');
   app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
   db = getFirestore(app);
+  
+  console.log('✅ Firebase initialized successfully');
   
   // Connect to emulator in development (commented out to use production database)
   // if (process.env.NODE_ENV === 'development' && typeof window === 'undefined') {
@@ -30,8 +50,34 @@ try {
   //   }
   // }
 } catch (error) {
-  console.error('Failed to initialize Firebase:', error);
-  throw new Error('Firebase initialization failed');
+  console.error('❌ Failed to initialize Firebase:', error);
+  console.error('Error details:', {
+    message: error instanceof Error ? error.message : 'Unknown error',
+    code: (error as any)?.code,
+    stack: error instanceof Error ? error.stack : undefined
+  });
+  
+  // Create a fallback app for development
+  if (process.env.NODE_ENV === 'development') {
+    console.log('🔄 Creating fallback Firebase app for development...');
+    try {
+      app = initializeApp({
+        projectId: 'caff-tracker-dev',
+        appId: '1:123456789:web:abcdef',
+        storageBucket: 'caff-tracker-dev.appspot.com',
+        apiKey: 'dev-api-key',
+        authDomain: 'caff-tracker-dev.firebaseapp.com',
+        messagingSenderId: '123456789',
+      });
+      db = getFirestore(app);
+      console.log('✅ Fallback Firebase app created');
+    } catch (fallbackError) {
+      console.error('❌ Failed to create fallback Firebase app:', fallbackError);
+      throw new Error('Firebase initialization failed completely');
+    }
+  } else {
+    throw new Error('Firebase initialization failed');
+  }
 }
 
 export { db, app }; 
