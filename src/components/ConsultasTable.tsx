@@ -42,14 +42,14 @@ export function ConsultasTable({ consultas, onEdit, onDelete }: ConsultasTablePr
 
       // Convertir fechas para comparación
       if (sortConfig.key === 'fechaConsulta' || sortConfig.key === 'fechaControl') {
-        aValue = new Date(aValue).getTime();
-        bValue = new Date(bValue).getTime();
-      }
-
-      // Convertir strings a minúsculas para comparación
-      if (typeof aValue === 'string' && typeof bValue === 'string') {
-        aValue = aValue.toLowerCase();
-        bValue = bValue.toLowerCase();
+        aValue = new Date(aValue as string).getTime();
+        bValue = new Date(bValue as string).getTime();
+      } else {
+        // Convertir strings a minúsculas para comparación
+        if (typeof aValue === 'string' && typeof bValue === 'string') {
+          aValue = aValue.toLowerCase();
+          bValue = bValue.toLowerCase();
+        }
       }
 
       if (aValue < bValue) {
