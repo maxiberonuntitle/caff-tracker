@@ -7,7 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { format, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { CalendarIcon, Trash2, MessageCircle, FileText, User, CreditCard, Stethoscope, UserCheck, FileEdit, Save, X, Calendar as CalendarIcon2, Building2, Clock, Edit3, Plus } from 'lucide-react';
+import { CalendarIcon, Trash2, Share2, FileText, User, CreditCard, Stethoscope, UserCheck, FileEdit, Save, X, Calendar as CalendarIcon2, Building2, Clock, Edit3, Plus, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -66,6 +66,7 @@ type ConsultaFormProps = {
   onDelete?: (id: string) => void;
   onShare?: (consulta: Consulta) => void;
   onSharePDF?: (consulta: Consulta) => void;
+  onDownloadPDF?: (consulta: Consulta) => void;
   initialData?: Consulta | null;
 };
 
@@ -79,7 +80,7 @@ export const studyOptions = [
     'Otros'
 ];
 
-export function ConsultaForm({ isOpen, setIsOpen, onSubmit, onDelete, onShare, onSharePDF, initialData }: ConsultaFormProps) {
+export function ConsultaForm({ isOpen, setIsOpen, onSubmit, onDelete, onShare, onSharePDF, onDownloadPDF, initialData }: ConsultaFormProps) {
   
   const [fechaConsultaOpen, setFechaConsultaOpen] = useState(false);
   const [fechaControlOpen, setFechaControlOpen] = useState(false);
@@ -606,21 +607,22 @@ export function ConsultaForm({ isOpen, setIsOpen, onSubmit, onDelete, onShare, o
                       size="sm"
                       onClick={() => onShare(initialData)}
                       className="bg-green-50 border-green-300 text-green-700 hover:bg-green-100 hover:border-green-400 shadow-md hover:shadow-lg transition-all duration-200 p-2"
-                      title="Compartir por WhatsApp"
+                      title="Compartir global"
                     >
-                      <MessageCircle className="h-4 w-4" />
+                      <Share2 className="h-4 w-4" />
                     </Button>
                   )}
-                  {initialData && onSharePDF && (
+                  {initialData && onDownloadPDF && (
                     <Button 
                       type="button" 
                       variant="outline"
                       size="sm"
-                      onClick={() => onSharePDF(initialData)}
+                      onClick={() => onDownloadPDF(initialData)}
                       className="bg-blue-50 border-blue-300 text-blue-700 hover:bg-blue-100 hover:border-blue-400 shadow-md hover:shadow-lg transition-all duration-200 p-2"
-                      title="Compartir en PDF"
+                      title="Descargar PDF"
                     >
                       <FileText className="h-4 w-4" />
+                      <Download className="h-4 w-4" />
                     </Button>
                   )}
                 </div>

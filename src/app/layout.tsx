@@ -6,9 +6,12 @@ import { NavigationLoading } from '@/components/NavigationLoading';
 
 export const metadata: Metadata = {
   title: 'Gestión de Consultas Médicas',
-  description: 'Seguimiento de consultas médicas para el Sistema SGCM',
+  description: 'Seguimiento de consultas médicas para CAFF Consultas Médicas - Gestión de consultas',
   icons: {
-    icon: '/favicon.svg',
+    icon: [
+      { url: '/favicon.svg?v=2', type: 'image/svg+xml' },
+      { url: '/favicon.svg?v=2', sizes: '32x32', type: 'image/svg+xml' },
+    ],
   },
 };
 
@@ -20,6 +23,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        <link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />

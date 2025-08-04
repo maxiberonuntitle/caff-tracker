@@ -87,7 +87,7 @@ export function ConsultasTable({ consultas, onEdit, onDelete }: ConsultasTablePr
 
   const handleShare = (consulta: Consulta) => {
     const details = [
-      `🏥 SISTEMA SGCM`,
+      `🏥 CAFF CONSULTAS MÉDICAS`,
       `CONSULTA MÉDICA`,
       `Fecha de generación: ${format(new Date(), 'dd/MM/yyyy HH:mm')}`,
       ``,
@@ -107,7 +107,7 @@ export function ConsultasTable({ consultas, onEdit, onDelete }: ConsultasTablePr
         `${consulta.observaciones}`
       ] : null,
       ``,
-      `📱 Compartido desde Sistema SGCM`,
+              `📱 Compartido desde CAFF Consultas Médicas`,
       `🕐 ${format(new Date(), 'dd/MM/yyyy HH:mm')}`
     ].filter(Boolean).flat().join('\n');
     

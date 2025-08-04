@@ -73,12 +73,12 @@ export function Navbar({ onNewConsulta }: NavbarProps) {
                    )} />
                </div>
                <div className="block">
-                 <h1 className={cn(
-                   "font-semibold transition-all duration-300",
-                   isScrolled ? "text-base text-gray-900" : "text-lg text-white drop-shadow-lg"
-                 )}>
-                   SGCM
-                 </h1>
+                                   <h1 className={cn(
+                    "font-semibold transition-all duration-300",
+                    isScrolled ? "text-base text-gray-900" : "text-lg text-white drop-shadow-lg"
+                  )}>
+                    CAFF
+                  </h1>
                  <p className={cn(
                    "text-xs transition-all duration-300",
                    isScrolled ? "text-gray-600" : "text-white/90"
