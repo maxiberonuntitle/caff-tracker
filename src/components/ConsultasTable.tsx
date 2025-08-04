@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { MoreHorizontal, Share2, ChevronUp, ChevronDown } from 'lucide-react';
+import { MoreHorizontal, Share2, ChevronUp, ChevronDown, Download } from 'lucide-react';
 import { format } from 'date-fns';
 import { StatusBadge } from './StatusBadge';
 import { ExpandableText } from './ExpandableText';
@@ -28,9 +28,10 @@ type ConsultasTableProps = {
   consultas: Consulta[];
   onEdit: (consulta: Consulta) => void;
   onDelete: (id: string) => void;
+  onDownloadTablePDF?: () => void;
 };
 
-export function ConsultasTable({ consultas, onEdit, onDelete }: ConsultasTableProps) {
+export function ConsultasTable({ consultas, onEdit, onDelete, onDownloadTablePDF }: ConsultasTableProps) {
   const [sortConfig, setSortConfig] = useState<SortConfig>({ key: null, direction: 'asc' });
 
   const sortedConsultas = useMemo(() => {
@@ -241,6 +242,12 @@ export function ConsultasTable({ consultas, onEdit, onDelete }: ConsultasTablePr
                             Compartir
                             <Share2 className="h-3 w-3" />
                         </DropdownMenuItem>
+                        {onDownloadTablePDF && (
+                            <DropdownMenuItem onClick={() => onDownloadTablePDF()} className="flex gap-2">
+                                Descargar PDF
+                                <Download className="h-3 w-3" />
+                            </DropdownMenuItem>
+                        )}
                         <DropdownMenuItem onClick={() => onDelete(consulta.id)} className="text-destructive">Eliminar</DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>

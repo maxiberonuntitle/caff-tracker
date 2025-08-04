@@ -931,6 +931,251 @@ export function ConsultasClient({ initialConsultas }: ConsultasClientProps) {
     }
   };
   
+  const handleDownloadTablePDF = async () => {
+    // Importar html2pdf dinámicamente
+    const html2pdf = (await import('html2pdf.js')).default;
+    
+    // Crear el contenido HTML del PDF con diseño optimizado para impresión
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <title>Reporte de Consultas - CAFF Consultas Médicas</title>
+          <style>
+            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+            
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+            
+            body { 
+              font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; 
+              margin: 0; 
+              line-height: 1.6; 
+              color: #1f2937;
+              background: white;
+              min-height: 100vh;
+            }
+            
+            .container {
+              max-width: 1200px;
+              margin: 0 auto;
+              background: white;
+            }
+            
+            .header { 
+              background: #f8fafc;
+              color: #1f2937;
+              padding: 20px 30px;
+              text-align: center;
+              border-bottom: 2px solid #e5e7eb;
+            }
+            
+            .header h1 { 
+              font-size: 20px; 
+              font-weight: 700; 
+              margin-bottom: 4px;
+              letter-spacing: -0.025em;
+            }
+            
+            .header h2 { 
+              font-size: 14px; 
+              font-weight: 500; 
+              color: #6b7280;
+              margin-bottom: 8px;
+            }
+            
+            .header p { 
+              font-size: 12px; 
+              color: #6b7280;
+              margin-bottom: 2px;
+            }
+            
+            .content {
+              padding: 30px;
+            }
+            
+            table { 
+              width: 100%; 
+              border-collapse: collapse; 
+              margin-top: 20px;
+              background: white;
+              border: 1px solid #e5e7eb;
+            }
+            
+            th, td { 
+              padding: 8px 12px; 
+              text-align: left; 
+              font-size: 11px;
+              border-bottom: 1px solid #f3f4f6;
+              border-right: 1px solid #f3f4f6;
+            }
+            
+            th { 
+              background: #f8fafc;
+              font-weight: 600;
+              color: #374151;
+              text-transform: uppercase;
+              letter-spacing: 0.05em;
+              font-size: 10px;
+            }
+            
+            tr:nth-child(even) {
+              background-color: #f9fafb;
+            }
+            
+            .status-badge {
+              display: inline-block;
+              padding: 2px 6px;
+              border-radius: 8px;
+              font-size: 9px;
+              font-weight: 600;
+              text-transform: uppercase;
+              letter-spacing: 0.05em;
+            }
+            
+            .status-agendada { background: #dbeafe; color: #1e40af; }
+            .status-pendiente { background: #fef3c7; color: #d97706; }
+            .status-completa { background: #d1fae5; color: #047857; }
+            
+            .footer { 
+              background: #f9fafb;
+              padding: 16px 30px;
+              text-align: center;
+              font-size: 11px;
+              color: #6b7280;
+              border-top: 1px solid #e5e7eb;
+            }
+            
+            .footer p {
+              margin-bottom: 2px;
+            }
+            
+            .footer p:last-child {
+              margin-bottom: 0;
+            }
+            
+            @media print {
+              body { background: white; }
+              .container { box-shadow: none; }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>CAFF CONSULTAS MÉDICAS</h1>
+              <h2>REPORTE DE CONSULTAS</h2>
+              <p>Fecha de generación: ${format(new Date(), 'dd/MM/yyyy HH:mm')}</p>
+              <p>Total de consultas filtradas: ${filteredConsultas.length}</p>
+            </div>
+            
+            <div class="content">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Paciente</th>
+                    <th>Cédula</th>
+                    <th>Estudio</th>
+                    <th>Educador/a</th>
+                    <th>F. Consulta</th>
+                    <th>F. Control</th>
+                    <th>Estado</th>
+                    <th>Observaciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${filteredConsultas.map(consulta => `
+                    <tr>
+                      <td>${consulta.nombre}</td>
+                      <td>${consulta.cedula}</td>
+                      <td>${consulta.estudio}</td>
+                      <td>${consulta.educador}</td>
+                      <td>${format(new Date(consulta.fechaConsulta), 'dd/MM/yyyy')}</td>
+                      <td>${format(new Date(consulta.fechaControl), 'dd/MM/yyyy')}</td>
+                      <td>
+                        <span class="status-badge status-${consulta.estado.toLowerCase()}">${consulta.estado}</span>
+                      </td>
+                      <td>${consulta.observaciones || '-'}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+            
+            <div class="footer">
+              <div class="footer-left">
+                <p>CAFF Consultas Médicas - Gestión de consultas</p>
+              </div>
+              <div class="footer-center">
+                <p>Sistema de Gestión de Consultas Médicas</p>
+              </div>
+              <div class="footer-right">
+                <p>${format(new Date(), 'dd/MM/yyyy HH:mm')}</p>
+              </div>
+            </div>
+          </div>
+        </body>
+      </html>
+    `;
+
+    // Crear un elemento temporal para el contenido HTML
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = htmlContent;
+    document.body.appendChild(tempDiv);
+    
+    // Configuración para el PDF
+    const opt = {
+      margin: [10, 10, 10, 10],
+      filename: `reporte_consultas_${format(new Date(), 'dd-MM-yyyy_HH-mm')}.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { 
+        scale: 2,
+        useCORS: true,
+        letterRendering: true
+      },
+      jsPDF: { 
+        unit: 'mm', 
+        format: 'a4', 
+        orientation: 'landscape' 
+      }
+    };
+    
+    // Generar y descargar el PDF
+    try {
+      // Generar el PDF como blob
+      const pdfBlob = await html2pdf().set(opt).from(tempDiv).outputPdf('blob');
+      
+      // Descargar el PDF directamente
+      const pdfUrl = URL.createObjectURL(pdfBlob);
+      const link = document.createElement('a');
+      link.href = pdfUrl;
+      link.download = `reporte_consultas_${format(new Date(), 'dd-MM-yyyy_HH-mm')}.pdf`;
+      link.style.display = 'none';
+      
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      toast({
+        title: 'Reporte descargado',
+        description: 'El reporte se ha descargado correctamente.',
+      });
+      
+      // Limpiar el URL
+      setTimeout(() => URL.revokeObjectURL(pdfUrl), 1000);
+    } catch (error) {
+      console.error('Error generando PDF:', error);
+      toast({
+        title: 'Error',
+        description: 'No se pudo generar el PDF. Inténtalo de nuevo.',
+        variant: 'destructive',
+      });
+    } finally {
+      // Limpiar el elemento temporal
+      document.body.removeChild(tempDiv);
+    }
+  };
+
   const handlePrint = async (sectionId: string) => {
     // Importar html2pdf dinámicamente
     const html2pdf = (await import('html2pdf.js')).default;
@@ -1471,6 +1716,7 @@ export function ConsultasClient({ initialConsultas }: ConsultasClientProps) {
                       consultas={paginatedConsultas}
                       onEdit={handleEditConsulta}
                       onDelete={handleDeleteConfirmation}
+                      onDownloadTablePDF={handleDownloadTablePDF}
                     />
                   )}
                 </CardContent>
