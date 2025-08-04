@@ -520,7 +520,7 @@ export function ConsultasClient({ initialConsultas }: ConsultasClientProps) {
                 <p>Sistema SGCM</p>
               </div>
               <div class="footer-center">
-                <p>Gestión de Consultas Médicas</p>
+                <p>Sistema de Gestión de Consultas Médicas</p>
               </div>
               <div class="footer-right">
                 <p>${format(new Date(), 'dd/MM/yyyy HH:mm')}</p>
@@ -766,7 +766,7 @@ export function ConsultasClient({ initialConsultas }: ConsultasClientProps) {
                 <p>Sistema SGCM</p>
               </div>
               <div class="footer-center">
-                <p>Reporte de Consultas</p>
+                <p>Sistema de Gestión de Consultas Médicas</p>
               </div>
               <div class="footer-right">
                 <p>${format(new Date(), 'dd/MM/yyyy HH:mm')}</p>

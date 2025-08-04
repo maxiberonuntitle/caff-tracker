@@ -327,7 +327,7 @@ function ConsultaCard({ consulta, onEdit, onDelete }: { consulta: Consulta, onEd
                 <p>Sistema SGCM</p>
               </div>
               <div class="footer-center">
-                <p>Gestión de Consultas Médicas</p>
+                <p>Sistema de Gestión de Consultas Médicas</p>
               </div>
               <div class="footer-right">
                 <p>${format(new Date(), 'dd/MM/yyyy HH:mm')}</p>
