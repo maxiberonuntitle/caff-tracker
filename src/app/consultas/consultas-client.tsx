@@ -82,7 +82,7 @@ export function ConsultasClient({ initialConsultas }: ConsultasClientProps) {
       const toDate = dateFilter.to ? format(dateFilter.to, 'dd/MM/yyyy') : '';
       parts.push(`Fechas: ${fromDate}${toDate ? ` - ${toDate}` : ''}`);
     }
-    return parts.length > 0 ? parts.join(', ') : 'Buscar consultas...';
+    return parts.length > 0 ? parts.join(', ') : 'Búsqueda rápida por paciente';
   }, [patientFilter, educatorFilter, statusFilter, studyFilter, dateFilter]);
 
   // Manejar parámetro edit de la URL
