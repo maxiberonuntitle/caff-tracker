@@ -17,7 +17,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { PlusCircle, Printer, ChevronLeft, ChevronRight, Grid3X3, Calendar, Table, Search, User, UserCheck, Filter, FileText, CalendarDays, ChevronDown } from 'lucide-react';
+import { PlusCircle, Printer, ChevronLeft, ChevronRight, Grid3X3, Calendar, Table, Search, User, UserCheck, Filter, FileText, CalendarDays, ChevronDown, Download } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import type { Consulta } from '@/lib/types';
 import { ConsultaForm, studyOptions } from './consulta-form';
@@ -1716,7 +1716,6 @@ export function ConsultasClient({ initialConsultas }: ConsultasClientProps) {
                       consultas={paginatedConsultas}
                       onEdit={handleEditConsulta}
                       onDelete={handleDeleteConfirmation}
-                      onDownloadTablePDF={handleDownloadTablePDF}
                     />
                   )}
                 </CardContent>
@@ -1782,7 +1781,7 @@ export function ConsultasClient({ initialConsultas }: ConsultasClientProps) {
               )}
               
               {!isLoading && filteredConsultas.length > 0 && (
-                <div className="flex justify-center mt-6 print-hidden">
+                <div className="flex justify-center gap-3 mt-6 print-hidden">
                   <Button
                     onClick={() => handlePrint('consultas-table-section')}
                     variant="outline"
@@ -1790,6 +1789,14 @@ export function ConsultasClient({ initialConsultas }: ConsultasClientProps) {
                   >
                     <Printer className="mr-2 h-4 w-4" />
                     Compartir Reporte
+                  </Button>
+                  <Button
+                    onClick={handleDownloadTablePDF}
+                    variant="outline"
+                    className="w-full sm:w-auto bg-white hover:bg-gray-50 border-gray-300"
+                  >
+                    <Download className="mr-2 h-4 w-4" />
+                    Descargar PDF
                   </Button>
                 </div>
               )}

@@ -28,10 +28,9 @@ type ConsultasTableProps = {
   consultas: Consulta[];
   onEdit: (consulta: Consulta) => void;
   onDelete: (id: string) => void;
-  onDownloadTablePDF?: () => void;
 };
 
-export function ConsultasTable({ consultas, onEdit, onDelete, onDownloadTablePDF }: ConsultasTableProps) {
+export function ConsultasTable({ consultas, onEdit, onDelete }: ConsultasTableProps) {
   const [sortConfig, setSortConfig] = useState<SortConfig>({ key: null, direction: 'asc' });
 
   const sortedConsultas = useMemo(() => {
@@ -242,12 +241,7 @@ export function ConsultasTable({ consultas, onEdit, onDelete, onDownloadTablePDF
                             Compartir
                             <Share2 className="h-3 w-3" />
                         </DropdownMenuItem>
-                        {onDownloadTablePDF && (
-                            <DropdownMenuItem onClick={() => onDownloadTablePDF()} className="flex gap-2">
-                                Descargar PDF
-                                <Download className="h-3 w-3" />
-                            </DropdownMenuItem>
-                        )}
+
                         <DropdownMenuItem onClick={() => onDelete(consulta.id)} className="text-destructive">Eliminar</DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
