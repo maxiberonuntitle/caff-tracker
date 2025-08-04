@@ -3,7 +3,7 @@ import type { Consulta } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { MoreHorizontal, Share2 } from 'lucide-react';
+import { MoreHorizontal, Share2, FileText, MessageCircle } from 'lucide-react';
 import { format } from 'date-fns';
 import { StatusBadge } from './StatusBadge';
 import { ExpandableText } from './ExpandableText';
@@ -35,21 +35,130 @@ export function ConsultasGrid({ consultas, onEdit, onDelete }: ConsultasGridProp
 
 function ConsultaCard({ consulta, onEdit, onDelete }: { consulta: Consulta, onEdit: (consulta: Consulta) => void, onDelete: (id: string) => void }) {
   
-  const handleShare = () => {
+  const handleShareWhatsApp = () => {
     const details = [
-      `*Resumen de Consulta Médica*`,
-      `*Paciente:* ${consulta.nombre}`,
-      `*Cédula:* ${consulta.cedula}`,
-      `*Estudio:* ${consulta.estudio}`,
-      `*Educador:* ${consulta.educador}`,
-      `*Fecha Consulta:* ${format(new Date(consulta.fechaConsulta), 'dd/MM/yyyy')}`,
-      `*Fecha Control:* ${format(new Date(consulta.fechaControl), 'dd/MM/yyyy')}`,
-      `*Estado:* ${consulta.estado}`,
-      consulta.observaciones ? `*Observaciones:* ${consulta.observaciones}` : null
-    ].filter(Boolean).join('\n');
+      `🏥 CENTRO CAFF`,
+      `CONSULTA MÉDICA`,
+      `Fecha de generación: ${format(new Date(), 'dd/MM/yyyy HH:mm')}`,
+      ``,
+      `📋 INFORMACIÓN DEL PACIENTE`,
+      `👤 Nombre: ${consulta.nombre}`,
+      `🆔 Cédula: ${consulta.cedula}`,
+      ``,
+      `🔬 DETALLES DE LA CONSULTA`,
+      `📊 Estudio: ${consulta.estudio}`,
+      `👨‍⚕️ Educador: ${consulta.educador}`,
+      `📅 Fecha Consulta: ${format(new Date(consulta.fechaConsulta), 'dd/MM/yyyy')}`,
+      `⏰ Fecha Control: ${format(new Date(consulta.fechaControl), 'dd/MM/yyyy')}`,
+      `📈 Estado: ${consulta.estado}`,
+      consulta.observaciones ? [
+        ``,
+        `📝 OBSERVACIONES`,
+        `${consulta.observaciones}`
+      ] : null,
+      ``,
+      `📱 Compartido desde Sistema CAFF`,
+      `🕐 ${format(new Date(), 'dd/MM/yyyy HH:mm')}`
+    ].filter(Boolean).flat().join('\n');
     
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(details)}`;
     window.open(whatsappUrl, '_blank');
+  };
+
+  const handleSharePDF = () => {
+    // Crear el contenido HTML del PDF con el mismo formato que el formulario
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <title>Consulta Médica - ${consulta.nombre}</title>
+          <style>
+            body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }
+            .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #333; padding-bottom: 20px; }
+            .section { margin-bottom: 25px; }
+            .section-title { font-size: 18px; font-weight: bold; color: #333; margin-bottom: 10px; border-bottom: 1px solid #ccc; padding-bottom: 5px; }
+            .field { margin-bottom: 8px; }
+            .label { font-weight: bold; color: #555; }
+            .value { color: #333; }
+            .observations { background-color: #f9f9f9; padding: 15px; border-radius: 5px; margin-top: 10px; }
+            .footer { margin-top: 40px; text-align: center; font-size: 12px; color: #666; border-top: 1px solid #ccc; padding-top: 20px; }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <h1>🏥 CENTRO CAFF</h1>
+            <h2>CONSULTA MÉDICA</h2>
+            <p>Fecha de generación: ${format(new Date(), 'dd/MM/yyyy HH:mm')}</p>
+          </div>
+          
+          <div class="section">
+            <div class="section-title">📋 INFORMACIÓN DEL PACIENTE</div>
+            <div class="field">
+              <span class="label">👤 Nombre:</span>
+              <span class="value">${consulta.nombre}</span>
+            </div>
+            <div class="field">
+              <span class="label">🆔 Cédula:</span>
+              <span class="value">${consulta.cedula}</span>
+            </div>
+          </div>
+          
+          <div class="section">
+            <div class="section-title">🔬 DETALLES DE LA CONSULTA</div>
+            <div class="field">
+              <span class="label">📊 Estudio:</span>
+              <span class="value">${consulta.estudio}</span>
+            </div>
+            <div class="field">
+              <span class="label">👨‍⚕️ Educador:</span>
+              <span class="value">${consulta.educador}</span>
+            </div>
+            <div class="field">
+              <span class="label">📅 Fecha Consulta:</span>
+              <span class="value">${format(new Date(consulta.fechaConsulta), 'dd/MM/yyyy')}</span>
+            </div>
+            <div class="field">
+              <span class="label">⏰ Fecha Control:</span>
+              <span class="value">${format(new Date(consulta.fechaControl), 'dd/MM/yyyy')}</span>
+            </div>
+            <div class="field">
+              <span class="label">📈 Estado:</span>
+              <span class="value">${consulta.estado}</span>
+            </div>
+          </div>
+          
+          ${consulta.observaciones ? `
+          <div class="section">
+            <div class="section-title">📝 OBSERVACIONES</div>
+            <div class="observations">
+              ${consulta.observaciones}
+            </div>
+          </div>
+          ` : ''}
+          
+          <div class="footer">
+            <p>📱 Compartido desde Sistema CAFF</p>
+            <p>🕐 ${format(new Date(), 'dd/MM/yyyy HH:mm')}</p>
+          </div>
+        </body>
+      </html>
+    `;
+
+    // Crear un blob con el contenido HTML
+    const blob = new Blob([htmlContent], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    
+    // Abrir en nueva ventana para imprimir/descargar
+    const printWindow = window.open(url, '_blank');
+    if (printWindow) {
+      printWindow.onload = () => {
+        printWindow.print();
+      };
+    }
+    
+    // Limpiar el URL después de un tiempo
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
   };
 
   const cardColorClass = {
@@ -99,10 +208,28 @@ function ConsultaCard({ consulta, onEdit, onDelete }: { consulta: Consulta, onEd
         )}
       </CardContent>
        <CardFooter className="p-3 md:p-3 pt-2">
-        <Button variant="outline" size="sm" className="w-full h-8 text-xs" onClick={handleShare}>
-          <Share2 className="mr-2 h-3 w-3" />
-          Compartir
-        </Button>
+        <div className="flex gap-2 w-full">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="flex-1 h-8 text-xs bg-green-50 border-green-300 text-green-700 hover:bg-green-100 hover:border-green-400" 
+            onClick={handleShareWhatsApp}
+            title="Compartir por WhatsApp"
+          >
+            <MessageCircle className="mr-1 h-3 w-3" />
+            WhatsApp
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="flex-1 h-8 text-xs bg-blue-50 border-blue-300 text-blue-700 hover:bg-blue-100 hover:border-blue-400" 
+            onClick={handleSharePDF}
+            title="Generar PDF"
+          >
+            <FileText className="mr-1 h-3 w-3" />
+            PDF
+          </Button>
+        </div>
       </CardFooter>
     </Card>
   );

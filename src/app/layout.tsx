@@ -2,10 +2,14 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { cn } from '@/lib/utils';
+import { NavigationLoading } from '@/components/NavigationLoading';
 
 export const metadata: Metadata = {
-  title: 'CAFF Tracker',
+  title: 'Gestión de Consultas Médicas',
   description: 'Seguimiento de consultas médicas para el Centro CAFF Montevideo',
+  icons: {
+    icon: '/favicon.svg',
+  },
 };
 
 export default function RootLayout({
@@ -27,6 +31,7 @@ export default function RootLayout({
           "min-h-screen bg-background font-body antialiased"
         )}
       >
+        <NavigationLoading />
         {children}
         <Toaster />
       </body>

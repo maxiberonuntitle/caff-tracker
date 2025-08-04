@@ -15,9 +15,10 @@ export async function addConsulta(data: Omit<Consulta, 'id'>) {
             fechaConsulta: Timestamp.fromDate(new Date(fechaConsulta)),
             fechaControl: Timestamp.fromDate(new Date(fechaControl)),
         };
-        await addDoc(collection(db, 'consultas'), dataToSave);
+        const docRef = await addDoc(collection(db, 'consultas'), dataToSave);
         revalidatePath('/consultas');
         revalidatePath('/');
+        return { id: docRef.id, ...data };
     } catch (error) {
         console.error("Error adding consulta: ", error);
         const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';

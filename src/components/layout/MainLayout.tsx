@@ -1,15 +1,16 @@
 
 'use client';
 import { useState } from 'react';
-import { SidebarProvider, Sidebar, SidebarInset } from '@/components/ui/sidebar';
-import { SidebarNav } from './SidebarNav';
-import { MobileHeader } from './MobileHeader';
-import { FloatingActionButton } from './FloatingActionButton';
+import { Navbar } from './Navbar';
+import { ContentContainer } from './ContentContainer';
 import { ConsultaForm } from '@/app/consultas/consulta-form';
 import type { Consulta } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { addConsulta } from '@/lib/actions';
 import { useRouter } from 'next/navigation';
+import { ScrollToTop } from '@/components/ui/scroll-to-top';
+
+import { Footer } from './Footer';
 
 export function MainLayout({ children }: { children: React.ReactNode }) {
   const { toast } = useToast();
@@ -42,24 +43,22 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
   };
   
   return (
-    <SidebarProvider>
-      <Sidebar>
-        <SidebarNav onNewConsulta={() => setIsFormOpen(true)} />
-      </Sidebar>
-      <SidebarInset>
-        <MobileHeader />
-        <main className="p-4 sm:p-6 lg:p-8 max-w-full mx-auto w-full">
-            {children}
-        </main>
-        <FloatingActionButton onClick={() => setIsFormOpen(true)} />
-        <ConsultaForm 
-          isOpen={isFormOpen}
-          setIsOpen={setIsFormOpen}
-          onSubmit={handleFormSubmit}
-          initialData={null}
-        />
-      </SidebarInset>
-    </SidebarProvider>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+      <Navbar onNewConsulta={() => setIsFormOpen(true)} />
+      <main className="py-8 sm:py-10 lg:py-12">
+        <ContentContainer>
+          {children}
+        </ContentContainer>
+      </main>
+      <Footer />
+      <ConsultaForm 
+        isOpen={isFormOpen}
+        setIsOpen={setIsFormOpen}
+        onSubmit={handleFormSubmit}
+        initialData={null}
+      />
+      <ScrollToTop onNewConsulta={() => setIsFormOpen(true)} />
+    </div>
   );
 }
 

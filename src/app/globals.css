@@ -2,6 +2,94 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Estilos globales */
+body {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  min-height: 100vh;
+}
+
+/* Ocultar botón flotante de Firebase Studio */
+[data-firebase-studio] {
+  display: none !important;
+}
+
+/* Ocultar cualquier botón flotante de Firebase */
+.firebase-emulator-ui {
+  display: none !important;
+}
+
+/* Ocultar botones flotantes de desarrollo */
+[data-testid="firebase-emulator-ui"],
+[data-testid="firebase-studio-button"] {
+  display: none !important;
+}
+
+/* Ocultar elementos de desarrollo de Next.js */
+#dev-tools-info-container,
+[data-nextjs-data-router-tree-view],
+[data-nextjs-toast-container],
+[data-next-badge-root],
+[data-nextjs-toast="true"],
+#__next-build-watcher,
+[data-nextjs-build-watcher],
+.next-build-watcher,
+[data-nextjs-dev-overlay] {
+  display: none !important;
+}
+
+/* Estilos para impresión */
+@media print {
+  /* Ocultar elementos que no deben imprimirse */
+  .print-hidden {
+    display: none !important;
+  }
+  
+  /* Asegurar que todas las columnas de la tabla sean visibles */
+  .print-container table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+  }
+  
+  .print-container th,
+  .print-container td {
+    display: table-cell !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    border: 1px solid #ddd !important;
+    padding: 6px !important;
+    text-align: left !important;
+    font-size: 11px !important;
+    vertical-align: top !important;
+  }
+  
+  .print-container th {
+    background-color: #f2f2f2 !important;
+    font-weight: bold !important;
+    font-size: 12px !important;
+  }
+  
+  /* Asegurar que el texto truncado se muestre completo */
+  .print-container .truncate {
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: unset !important;
+  }
+  
+  /* Ocultar todos los elementos del body excepto el contenedor de impresión */
+  body > *:not(.print-container) {
+    display: none !important;
+  }
+  
+  .print-container {
+    display: block !important;
+    position: static !important;
+    width: 100% !important;
+    height: auto !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+}
+
 @layer base {
   :root {
     --background: 210 40% 96.1%; /* celeste muy claro */
@@ -10,33 +98,33 @@
     --card-foreground: 215 28% 17%;
     --popover: 210 40% 98%;
     --popover-foreground: 215 28% 17%;
-    --primary: 207 34% 60%;
+    --primary: 210 100% 40%;
     --primary-foreground: 210 40% 98%;
     --secondary: 210 40% 91.2%;
     --secondary-foreground: 215.4 16.3% 46.9%;
     --muted: 210 40% 91.2%;
     --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 261 74% 73%;
+    --accent: 210 100% 40%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 207 34% 60%;
-    --chart-1: 207 34% 60%;
-    --chart-2: 261 74% 73%;
+    --ring: 210 100% 40%;
+    --chart-1: 210 100% 40%;
+    --chart-2: 210 100% 40%;
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
     --sidebar-background: 210 40% 96.1%; /* celeste muy claro */
     --sidebar-foreground: 215 28% 17%; /* azul oscuro */
-    --sidebar-primary: 207 34% 60%;
+    --sidebar-primary: 210 100% 40%;
     --sidebar-primary-foreground: 210 40% 98%;
     --sidebar-accent: 210 40% 91.2%; /* Color para hover/activo */
     --sidebar-accent-foreground: 215 28% 17%;
     --sidebar-border: 214.3 31.8% 91.4%;
-    --sidebar-ring: 207 34% 60%;
+    --sidebar-ring: 210 100% 40%;
   }
   .dark {
     --background: 216 28% 7%;
@@ -45,32 +133,32 @@
     --card-foreground: 210 40% 98%;
     --popover: 216 28% 10%;
     --popover-foreground: 210 40% 98%;
-    --primary: 207 34% 60%;
+    --primary: 210 100% 40%;
     --primary-foreground: 210 40% 98%;
     --secondary: 217 33% 17%;
     --secondary-foreground: 210 40% 98%;
     --muted: 217 33% 17%;
     --muted-foreground: 215 20% 65%;
-    --accent: 261 74% 73%;
+    --accent: 210 100% 40%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
     --border: 217 33% 17%;
     --input: 217 33% 17%;
-    --ring: 207 34% 60%;
-    --chart-1: 207 34% 60%;
-    --chart-2: 261 74% 73%;
+    --ring: 210 100% 40%;
+    --chart-1: 210 100% 40%;
+    --chart-2: 210 100% 40%;
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
     --sidebar-background: 216 28% 10%;
     --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 207 34% 60%;
+    --sidebar-primary: 210 100% 40%;
     --sidebar-primary-foreground: 210 40% 98%;
     --sidebar-accent: 217 33% 17%;
     --sidebar-accent-foreground: 210 40% 98%;
     --sidebar-border: 217 33% 17%;
-    --sidebar-ring: 207 34% 60%;
+    --sidebar-ring: 210 100% 40%;
   }
 }
 

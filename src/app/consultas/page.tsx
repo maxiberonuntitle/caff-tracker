@@ -10,7 +10,7 @@ export default async function ConsultasPage() {
   return (
     <MainLayout>
       <ErrorBoundary>
-        <div className="space-y-6">
+        <div className="space-y-8">
           <ConsultasClient initialConsultas={initialConsultas} />
         </div>
       </ErrorBoundary>

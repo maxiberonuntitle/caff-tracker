@@ -6,7 +6,9 @@ import type { Consulta } from './types';
 // This function now runs only on the server.
 export async function getConsultas(): Promise<Consulta[]> {
     try {
+        console.log('🔍 Iniciando consulta a Firebase...');
         const snapshot = await getDocs(collection(db, 'consultas'));
+        console.log(`📊 Documentos encontrados: ${snapshot.docs.length}`);
         
         const consultas: Consulta[] = snapshot.docs.map(doc => {
             const data = doc.data();
@@ -54,10 +56,16 @@ export async function getConsultas(): Promise<Consulta[]> {
             new Date(b.fechaConsulta).getTime() - new Date(a.fechaConsulta).getTime()
         );
         
+        console.log(`✅ Consultas procesadas exitosamente: ${sortedConsultas.length}`);
         return sortedConsultas;
 
     } catch (error) {
-        console.error("Firebase query failed:", error);
+        console.error("❌ Firebase query failed:", error);
+        console.error("Error details:", {
+            message: error instanceof Error ? error.message : 'Unknown error',
+            code: (error as any)?.code,
+            stack: error instanceof Error ? error.stack : undefined
+        });
         // Return empty array instead of throwing to prevent app crashes
         return [];
     }

@@ -19,16 +19,16 @@ try {
   app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
   db = getFirestore(app);
   
-  // Connect to emulator in development
-  if (process.env.NODE_ENV === 'development' && typeof window === 'undefined') {
-    // Only connect to emulator on server side in development
-    try {
-      connectFirestoreEmulator(db, 'localhost', 8080);
-    } catch (error) {
-      // Emulator might not be running, which is fine
-      console.log('Firebase emulator not running, using production database');
-    }
-  }
+  // Connect to emulator in development (commented out to use production database)
+  // if (process.env.NODE_ENV === 'development' && typeof window === 'undefined') {
+  //   // Only connect to emulator on server side in development
+  //   try {
+  //     connectFirestoreEmulator(db, 'localhost', 8080);
+  //   } catch (error) {
+  //     // Emulator might not be running, which is fine
+  //     console.log('Firebase emulator not running, using production database');
+  //   }
+  // }
 } catch (error) {
   console.error('Failed to initialize Firebase:', error);
   throw new Error('Firebase initialization failed');
