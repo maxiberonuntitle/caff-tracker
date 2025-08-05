@@ -80,20 +80,20 @@ export function Navbar({ onNewConsulta, onNewSNA }: NavbarProps) {
                      isScrolled ? "size-4" : "size-5 stroke-[2.5]"
                    )} />
                </div>
-               <div className="block">
-                                   <h1 className={cn(
-                    "font-semibold transition-all duration-300",
-                    isScrolled ? "text-base text-gray-900" : "text-lg text-white drop-shadow-lg"
-                  )}>
-                    CAFF
-                  </h1>
-                 <p className={cn(
-                   "text-xs transition-all duration-300",
-                   isScrolled ? "text-gray-600" : "text-white/90"
-                 )}>
-                   Gestión Integral
-                 </p>
-               </div>
+                                                               <div className="block">
+                                     <h1 className={cn(
+                      "font-semibold transition-all duration-300",
+                      isScrolled ? "text-base text-gray-900" : "text-lg text-white drop-shadow-lg"
+                    )}>
+                                             Centro CAFF
+                    </h1>
+                   <p className={cn(
+                     "text-xs transition-all duration-300",
+                     isScrolled ? "text-gray-600" : "text-white/90"
+                   )}>
+                     Gestión Integral
+                   </p>
+                 </div>
              </Link>
 
                          {/* Navegación desktop */}
