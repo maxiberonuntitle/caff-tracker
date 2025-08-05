@@ -6,8 +6,8 @@ import { useRouter } from 'next/navigation';
 import { Area, AreaChart, ResponsiveContainer, Tooltip, Bar, BarChart, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PageHeader } from '@/components/PageHeader';
-import { ClipboardList, CheckCircle, Clock, CalendarCheck, TrendingUp, Users, Calendar, Activity, Database, AlertCircle, FileCheck, CalendarDays } from 'lucide-react';
-import type { Consulta, ConsultaStatus } from '@/lib/types';
+import { ClipboardList, CheckCircle, Clock, CalendarCheck, TrendingUp, Users, Calendar, Activity, Database, AlertCircle, FileCheck, CalendarDays, AlertTriangle, Shield } from 'lucide-react';
+import type { Consulta, ConsultaStatus, SNA } from '@/lib/types';
 import { ChartTooltipContent, ChartContainer } from '@/components/ui/chart';
 import { subMonths, format, startOfMonth, endOfMonth, isWithinInterval } from 'date-fns';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -39,7 +39,31 @@ function generateChartData(consultas: Consulta[], filterStatus?: ConsultaStatus)
       }
   });
   return data;
-};
+}
+
+function generateSNAChartData(snas: SNA[], filterStatus?: string) {
+  const data = Array.from({ length: 6 }).map((_, i) => {
+      const date = subMonths(new Date(), 5 - i);
+      return {
+          date: format(date, 'MMM yyyy'),
+          value: 0,
+      };
+  });
+
+  snas.forEach(sna => {
+      if (!filterStatus || sna.estado === filterStatus) {
+          const snaDate = new Date(sna.fechaDenuncia);
+          const monthIndex = data.findIndex(d => {
+              const dDate = new Date(d.date);
+              return dDate.getMonth() === snaDate.getMonth() && dDate.getFullYear() === snaDate.getFullYear();
+          });
+          if (monthIndex !== -1) {
+              data[monthIndex].value++;
+          }
+      }
+  });
+  return data;
+}
 
 function generateMonthlyData(consultas: Consulta[]) {
   const currentMonth = new Date();
@@ -68,12 +92,51 @@ function generateMonthlyData(consultas: Consulta[]) {
   };
 }
 
+function generateSNAMonthlyData(snas: SNA[]) {
+  const currentMonth = new Date();
+  const lastMonth = subMonths(currentMonth, 1);
+  
+  const currentMonthSNAs = snas.filter(sna => {
+    const snaDate = new Date(sna.fechaDenuncia);
+    return isWithinInterval(snaDate, {
+      start: startOfMonth(currentMonth),
+      end: endOfMonth(currentMonth)
+    });
+  }).length;
+  
+  const lastMonthSNAs = snas.filter(sna => {
+    const snaDate = new Date(sna.fechaDenuncia);
+    return isWithinInterval(snaDate, {
+      start: startOfMonth(lastMonth),
+      end: endOfMonth(lastMonth)
+    });
+  }).length;
+  
+  return {
+    current: currentMonthSNAs,
+    last: lastMonthSNAs,
+    change: lastMonthSNAs > 0 ? ((currentMonthSNAs - lastMonthSNAs) / lastMonthSNAs * 100) : 0
+  };
+}
+
 // Función para obtener consultas del mes actual
 function getCurrentMonthConsultas(consultas: Consulta[]) {
   const currentMonth = new Date();
   return consultas.filter(consulta => {
     const consultaDate = new Date(consulta.fechaConsulta);
     return isWithinInterval(consultaDate, {
+      start: startOfMonth(currentMonth),
+      end: endOfMonth(currentMonth)
+    });
+  });
+}
+
+// Función para obtener SNAs del mes actual
+function getCurrentMonthSNAs(snas: SNA[]) {
+  const currentMonth = new Date();
+  return snas.filter(sna => {
+    const snaDate = new Date(sna.fechaDenuncia);
+    return isWithinInterval(snaDate, {
       start: startOfMonth(currentMonth),
       end: endOfMonth(currentMonth)
     });
@@ -156,6 +219,20 @@ const StatCard = ({
           border: 'border-purple-200/50',
           gradient: 'from-purple-50/50 to-purple-100/30'
         };
+      case 'orange':
+        return {
+          bg: 'bg-orange-500/10 group-hover:bg-orange-500/20',
+          text: 'text-orange-600',
+          border: 'border-orange-200/50',
+          gradient: 'from-orange-50/50 to-orange-100/30'
+        };
+      case 'red':
+        return {
+          bg: 'bg-red-500/10 group-hover:bg-red-500/20',
+          text: 'text-red-600',
+          border: 'border-red-200/50',
+          gradient: 'from-red-50/50 to-red-100/30'
+        };
       default:
         return {
           bg: 'bg-gray-500/10 group-hover:bg-gray-500/20',
@@ -204,24 +281,141 @@ const StatCard = ({
   );
 };
 
+const StatCardSNA = ({ 
+  title, 
+  value, 
+  icon: Icon, 
+  color, 
+  trend, 
+  subtitle,
+  onClick
+}: {
+  title: string;
+  value: string | number;
+  icon: any;
+  color: string;
+  trend?: number;
+  subtitle?: string;
+  onClick?: () => void;
+}) => {
+  const getColorClasses = (color: string) => {
+    switch (color) {
+      case 'red':
+        return {
+          bg: 'bg-red-600',
+          text: 'text-white',
+          border: 'border-red-600',
+          gradient: 'from-red-600 to-red-700',
+          iconBg: 'bg-white/20',
+          iconColor: 'text-white'
+        };
+      case 'orange':
+        return {
+          bg: 'bg-orange-600',
+          text: 'text-white',
+          border: 'border-orange-600',
+          gradient: 'from-orange-600 to-orange-700',
+          iconBg: 'bg-white/20',
+          iconColor: 'text-white'
+        };
+      case 'green':
+        return {
+          bg: 'bg-green-600',
+          text: 'text-white',
+          border: 'border-green-600',
+          gradient: 'from-green-600 to-green-700',
+          iconBg: 'bg-white/20',
+          iconColor: 'text-white'
+        };
+      case 'purple':
+        return {
+          bg: 'bg-purple-600',
+          text: 'text-white',
+          border: 'border-purple-600',
+          gradient: 'from-purple-600 to-purple-700',
+          iconBg: 'bg-white/20',
+          iconColor: 'text-white'
+        };
+      default:
+        return {
+          bg: 'bg-gray-600',
+          text: 'text-white',
+          border: 'border-gray-600',
+          gradient: 'from-gray-600 to-gray-700',
+          iconBg: 'bg-white/20',
+          iconColor: 'text-white'
+        };
+    }
+  };
+
+  const colorClasses = getColorClasses(color);
+
+  return (
+    <Card 
+      className={cn(
+        "w-full bg-gradient-to-br backdrop-blur-sm hover:shadow-xl hover:scale-[1.02] transition-all duration-300 group overflow-hidden",
+        colorClasses.gradient,
+        colorClasses.border,
+        onClick && "cursor-pointer hover:scale-[1.05]"
+      )}
+      onClick={onClick}
+    >
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 p-6 pb-4">
+        <CardTitle className={cn("text-sm font-semibold transition-colors", colorClasses.text)}>
+          {title}
+        </CardTitle>
+        <div className={cn("p-3 rounded-full transition-all duration-300 group-hover:scale-110", colorClasses.iconBg)}>
+          <Icon className={cn("h-5 w-5", colorClasses.iconColor)} />
+        </div>
+      </CardHeader>
+      <CardContent className="p-6 pt-0">
+        <div className="flex items-end justify-between mb-3">
+          <div className={cn("text-3xl font-bold", colorClasses.text)}>{value}</div>
+          {trend !== undefined && (
+            <Badge variant="secondary" className="text-xs bg-white/20 text-white border-white/30">
+              <TrendingUp className="h-3 w-3 mr-1" />
+              {trend >= 0 ? '+' : ''}{trend.toFixed(1)}%
+            </Badge>
+          )}
+        </div>
+        {subtitle && (
+          <p className={cn("text-sm opacity-90", colorClasses.text)}>{subtitle}</p>
+        )}
+        {/* Elemento decorativo circular */}
+        <div className="absolute -top-4 -right-4 w-16 h-16 rounded-full bg-white/10 group-hover:bg-white/20 transition-all duration-300"></div>
+        <div className="absolute -bottom-2 -left-2 w-8 h-8 rounded-full bg-white/5 group-hover:bg-white/10 transition-all duration-300"></div>
+      </CardContent>
+    </Card>
+  );
+};
+
 type InicioClientProps = {
     initialConsultas: Consulta[];
+    initialSNAs: SNA[];
 }
 
-export function InicioClient({ initialConsultas }: InicioClientProps) {
+export function InicioClient({ initialConsultas, initialSNAs }: InicioClientProps) {
   const router = useRouter();
   const [selectedDay, setSelectedDay] = useState<Date | undefined>(new Date());
   const consultas = initialConsultas;
+  const snas = initialSNAs;
 
   const totalConsultas = consultas.length;
   const pendingConsultas = consultas.filter(v => v.estado === 'Pendiente').length;
   const completedConsultas = consultas.filter(v => v.estado === 'Completa').length;
   const scheduledConsultas = consultas.filter(v => v.estado === 'Agendada').length;
 
+  // Cálculos de SNAs
+  const totalSNAs = snas.length;
+  const openSNAs = snas.filter(v => v.estado === 'Abierta').length;
+  const closedSNAs = snas.filter(v => v.estado === 'Cerrada').length;
+  const snasWithLesions = snas.filter(v => v.constatacionLesiones).length;
+
   // Cálculos adicionales
   const completionRate = totalConsultas > 0 ? (completedConsultas / totalConsultas * 100) : 0;
   const pendingRate = totalConsultas > 0 ? (pendingConsultas / totalConsultas * 100) : 0;
   const monthlyData = generateMonthlyData(consultas);
+  const snaMonthlyData = generateSNAMonthlyData(snas);
 
   const allChartData = useMemo(() => generateChartData(consultas), [consultas]);
   const pendingChartData = useMemo(() => generateChartData(consultas, 'Pendiente'), [consultas]);
@@ -231,6 +425,9 @@ export function InicioClient({ initialConsultas }: InicioClientProps) {
   // Consultas del mes actual
   const currentMonthConsultas = useMemo(() => getCurrentMonthConsultas(consultas), [consultas]);
   
+  // SNAs del mes actual
+  const currentMonthSNAs = useMemo(() => getCurrentMonthSNAs(snas), [snas]);
+  
   // Obtener consultas del día seleccionado
   const consultasDelDiaSeleccionado = useMemo(() => {
     if (!selectedDay) return [];
@@ -238,6 +435,14 @@ export function InicioClient({ initialConsultas }: InicioClientProps) {
       format(new Date(consulta.fechaConsulta), 'yyyy-MM-dd') === format(selectedDay, 'yyyy-MM-dd')
     );
   }, [selectedDay, currentMonthConsultas]);
+  
+  // Obtener SNAs del día seleccionado
+  const snasDelDiaSeleccionado = useMemo(() => {
+    if (!selectedDay) return [];
+    return currentMonthSNAs.filter(sna => 
+      format(new Date(sna.fechaDenuncia), 'yyyy-MM-dd') === format(selectedDay, 'yyyy-MM-dd')
+    );
+  }, [selectedDay, currentMonthSNAs]);
 
   // Funciones de navegación
   const navigateToConsultas = (statusFilter: string) => {
@@ -248,8 +453,24 @@ export function InicioClient({ initialConsultas }: InicioClientProps) {
     router.push('/consultas');
   };
 
+  const navigateToSNAs = (statusFilter: string) => {
+    router.push(`/sna?status=${statusFilter}`);
+  };
+
+  const navigateToSNAsWithLesiones = () => {
+    router.push('/sna?lesiones=si');
+  };
+
+  const navigateToAllSNAs = () => {
+    router.push('/sna');
+  };
+
   const handleAddConsulta = () => {
     router.push('/consultas');
+  };
+
+  const handleAddSNA = () => {
+    router.push('/sna');
   };
 
   const handleEditConsulta = (consulta: Consulta) => {
@@ -257,9 +478,19 @@ export function InicioClient({ initialConsultas }: InicioClientProps) {
     router.push(`/consultas?edit=${consulta.id}`);
   };
 
+  const handleEditSNA = (sna: SNA) => {
+    console.log('Inicio: Editing SNA:', sna);
+    router.push(`/sna?edit=${sna.id}`);
+  };
+
   const handleDeleteConsulta = (id: string) => {
     // En el inicio, redirigir a consultas para eliminar
     router.push('/consultas');
+  };
+
+  const handleDeleteSNA = (id: string) => {
+    // En el inicio, redirigir a SNAs para eliminar
+    router.push('/sna');
   };
 
   return (
@@ -274,16 +505,16 @@ export function InicioClient({ initialConsultas }: InicioClientProps) {
       {/* Métricas principales */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
         <StatCard
-          title="Total de Casos"
+          title="Total de Consultas"
           value={totalConsultas}
           icon={Database}
           color="blue"
-          subtitle={`${totalConsultas} casos atendidos`}
+          subtitle={`${totalConsultas} consultas atendidas`}
           onClick={navigateToAllConsultas}
         />
         
         <StatCard
-          title="Casos Pendientes"
+          title="Consultas Pendientes"
           value={pendingConsultas}
           icon={AlertCircle}
           color="yellow"
@@ -292,7 +523,7 @@ export function InicioClient({ initialConsultas }: InicioClientProps) {
         />
         
         <StatCard
-          title="Casos Completados"
+          title="Consultas Completadas"
           value={completedConsultas}
           icon={FileCheck}
           color="green"
@@ -301,7 +532,7 @@ export function InicioClient({ initialConsultas }: InicioClientProps) {
         />
         
         <StatCard
-          title="Citas Agendadas"
+          title="Consultas Agendadas"
           value={scheduledConsultas}
           icon={CalendarDays}
           color="purple"
@@ -310,8 +541,47 @@ export function InicioClient({ initialConsultas }: InicioClientProps) {
         />
       </div>
 
+      {/* Métricas de SNAs */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
+        <StatCardSNA
+          title="Total de SNAs"
+          value={totalSNAs}
+          icon={AlertTriangle}
+          color="red"
+          subtitle={`${totalSNAs} salidas no acordadas`}
+          onClick={navigateToAllSNAs}
+        />
+        
+        <StatCardSNA
+          title="SNAs Abiertas"
+          value={openSNAs}
+          icon={Clock}
+          color="orange"
+          subtitle={`${totalSNAs > 0 ? (openSNAs / totalSNAs * 100).toFixed(1) : 0}% requieren atención`}
+          onClick={() => navigateToSNAs('Abierta')}
+        />
+        
+        <StatCardSNA
+          title="SNAs Cerradas"
+          value={closedSNAs}
+          icon={CheckCircle}
+          color="green"
+          subtitle={`${totalSNAs > 0 ? (closedSNAs / totalSNAs * 100).toFixed(1) : 0}% resueltas`}
+          onClick={() => navigateToSNAs('Cerrada')}
+        />
+        
+        <StatCardSNA
+          title="Con constatación"
+          value={snasWithLesions}
+          icon={Shield}
+          color="purple"
+          subtitle="SNAs con constatación"
+          onClick={navigateToSNAsWithLesiones}
+        />
+      </div>
+
       {/* Métricas adicionales */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         <Card className="bg-gradient-to-br from-green-50 to-green-100/50 border-green-200/50 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">
           <CardContent className="p-4 sm:p-6">
                           <div className="flex items-center space-x-3 sm:space-x-4">
@@ -319,9 +589,9 @@ export function InicioClient({ initialConsultas }: InicioClientProps) {
                   <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-green-600" />
                 </div>
               <div>
-                <p className="text-sm font-semibold text-green-800 uppercase tracking-wide">Tasa de Resolución</p>
+                <p className="text-sm font-semibold text-green-800 uppercase tracking-wide">Consultas completadas exitosamente</p>
                 <p className="text-2xl sm:text-3xl font-bold text-green-700">{completionRate.toFixed(1)}%</p>
-                <p className="text-xs text-green-600 mt-1">Casos completados exitosamente</p>
+                <p className="text-xs text-green-600 mt-1">Tasa de Resolución</p>
               </div>
             </div>
           </CardContent>
@@ -334,7 +604,7 @@ export function InicioClient({ initialConsultas }: InicioClientProps) {
                   <AlertCircle className="h-5 w-5 sm:h-6 sm:w-6 text-yellow-600" />
                 </div>
               <div>
-                <p className="text-sm font-semibold text-yellow-800 uppercase tracking-wide">Casos Activos</p>
+                <p className="text-sm font-semibold text-yellow-800 uppercase tracking-wide">Consultas Activas</p>
                 <p className="text-2xl sm:text-3xl font-bold text-yellow-700">{pendingConsultas + scheduledConsultas}</p>
                 <p className="text-xs text-yellow-600 mt-1">Requieren seguimiento</p>
               </div>
@@ -349,9 +619,24 @@ export function InicioClient({ initialConsultas }: InicioClientProps) {
                   <CalendarDays className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
                 </div>
               <div>
-                <p className="text-sm font-semibold text-blue-800 uppercase tracking-wide">Atenciones del Mes</p>
+                <p className="text-sm font-semibold text-blue-800 uppercase tracking-wide">Consultas del Mes</p>
                 <p className="text-2xl sm:text-3xl font-bold text-blue-700">{monthlyData.current}</p>
                 <p className="text-xs text-blue-600 mt-1">Evaluaciones realizadas</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-red-50 to-red-100/50 border-red-200/50 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">
+          <CardContent className="p-4 sm:p-6">
+                          <div className="flex items-center space-x-3 sm:space-x-4">
+                <div className="p-2 sm:p-3 bg-red-500/20 rounded-xl shadow-sm">
+                  <AlertTriangle className="h-5 w-5 sm:h-6 sm:w-6 text-red-600" />
+                </div>
+              <div>
+                <p className="text-sm font-semibold text-red-800 uppercase tracking-wide">SNAs del Mes</p>
+                <p className="text-2xl sm:text-3xl font-bold text-red-700">{snaMonthlyData.current}</p>
+                <p className="text-xs text-red-600 mt-1">Salidas no acordadas</p>
               </div>
             </div>
           </CardContent>
@@ -363,7 +648,7 @@ export function InicioClient({ initialConsultas }: InicioClientProps) {
         <CardHeader className="p-4 sm:p-6">
           <CardTitle className="text-lg font-semibold text-gray-900 text-center flex items-center justify-center gap-2">
           <CalendarDays className="h-5 w-5" />
-          Calendario de Atenciones del Mes
+          Calendario de Actividades del Mes
         </CardTitle>
         </CardHeader>
         <CardContent className="p-4 sm:p-6">
@@ -381,6 +666,9 @@ export function InicioClient({ initialConsultas }: InicioClientProps) {
                     const fechaStr = format(dayDate, 'yyyy-MM-dd');
                     const consultasDelDia = currentMonthConsultas.filter(consulta => 
                       format(new Date(consulta.fechaConsulta), 'yyyy-MM-dd') === fechaStr
+                    );
+                    const snasDelDia = currentMonthSNAs.filter(sna => 
+                      format(new Date(sna.fechaDenuncia), 'yyyy-MM-dd') === fechaStr
                     );
                     const isSelected = selectedDay && format(dayDate, 'yyyy-MM-dd') === format(selectedDay, 'yyyy-MM-dd');
 
@@ -402,28 +690,42 @@ export function InicioClient({ initialConsultas }: InicioClientProps) {
                               {format(dayDate, 'd')}
                             </div>
                             
-                            {/* Indicadores de consultas (solo visuales, no clickeables) */}
-                            {consultasDelDia.length > 0 && (
-                              <div className="space-y-1">
-                                {consultasDelDia.slice(0, 3).map((consulta, index) => (
-                                  <div
-                                    key={consulta.id}
-                                    className={cn(
-                                      'h-1.5 rounded-full opacity-80 transition-opacity',
-                                      consulta.estado === 'Agendada' && 'bg-blue-500',
-                                      consulta.estado === 'Pendiente' && 'bg-yellow-500',
-                                      consulta.estado === 'Completa' && 'bg-green-500'
-                                    )}
-                                    title={`${consulta.nombre} - ${consulta.estado}`}
-                                  />
-                                ))}
-                                {consultasDelDia.length > 3 && (
-                                  <div className="h-1.5 rounded-full bg-gray-400 opacity-60 text-[6px] text-white flex items-center justify-center">
-                                    +{consultasDelDia.length - 3}
-                                  </div>
-                                )}
-                              </div>
-                            )}
+                            {/* Indicadores de consultas y SNAs */}
+                            <div className="space-y-1">
+                              {/* Consultas */}
+                              {consultasDelDia.slice(0, 2).map((consulta, index) => (
+                                <div
+                                  key={`consulta-${consulta.id}`}
+                                  className={cn(
+                                    'h-1.5 rounded-full opacity-80 transition-opacity',
+                                    consulta.estado === 'Agendada' && 'bg-blue-500',
+                                    consulta.estado === 'Pendiente' && 'bg-yellow-500',
+                                    consulta.estado === 'Completa' && 'bg-green-500'
+                                  )}
+                                  title={`${consulta.nombre} - ${consulta.estado}`}
+                                />
+                              ))}
+                              
+                              {/* SNAs */}
+                              {snasDelDia.slice(0, 2).map((sna, index) => (
+                                <div
+                                  key={`sna-${sna.id}`}
+                                  className={cn(
+                                    'h-1.5 rounded-full opacity-80 transition-opacity',
+                                    sna.estado === 'Abierta' && 'bg-red-500',
+                                    sna.estado === 'Cerrada' && 'bg-purple-500'
+                                  )}
+                                  title={`${sna.nombreAdolescente} - SNA ${sna.estado}`}
+                                />
+                              ))}
+                              
+                              {/* Contador adicional si hay más elementos */}
+                              {(consultasDelDia.length + snasDelDia.length) > 4 && (
+                                <div className="h-1.5 rounded-full bg-gray-400 opacity-60 text-[6px] text-white flex items-center justify-center">
+                                  +{(consultasDelDia.length + snasDelDia.length) - 4}
+                                </div>
+                              )}
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -433,7 +735,7 @@ export function InicioClient({ initialConsultas }: InicioClientProps) {
               />
             </div>
 
-            {/* Consultas del día seleccionado */}
+            {/* Consultas y SNAs del día seleccionado */}
             <div className="space-y-4">
               <h3 className="font-semibold text-gray-700">
                 {selectedDay ? format(selectedDay, 'EEEE, d MMMM yyyy', { locale: es }) : 'Selecciona una fecha'}
@@ -442,46 +744,99 @@ export function InicioClient({ initialConsultas }: InicioClientProps) {
               {!selectedDay ? (
                 <div className="text-center py-8">
                   <CalendarDays className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-                  <p className="text-gray-500 text-sm">Toca un día en el calendario para ver las consultas</p>
+                  <p className="text-gray-500 text-sm">Toca un día en el calendario para ver las actividades</p>
                 </div>
-              ) : consultasDelDiaSeleccionado.length === 0 ? (
-                <p className="text-gray-500 text-sm">No hay consultas programadas para este día.</p>
+              ) : (consultasDelDiaSeleccionado.length === 0 && snasDelDiaSeleccionado.length === 0) ? (
+                <p className="text-gray-500 text-sm">No hay actividades programadas para este día.</p>
               ) : (
-                <div className="space-y-3">
-                  <p className="text-xs text-gray-600 bg-blue-50 p-2 rounded-md">
-                    💡 Toca una consulta para editarla
-                  </p>
-                  <div className="space-y-2 max-h-96 overflow-y-auto">
-                    {consultasDelDiaSeleccionado.map((consulta) => (
-                      <div
-                        key={consulta.id}
-                        className={cn(
-                          'p-3 rounded-lg border cursor-pointer transition-all hover:shadow-md',
-                          'bg-white border-l-4',
-                          consulta.estado === 'Agendada' && 'border-l-blue-500',
-                          consulta.estado === 'Pendiente' && 'border-l-yellow-500',
-                          consulta.estado === 'Completa' && 'border-l-green-500'
-                        )}
-                        onClick={() => handleEditConsulta(consulta)}
-                      >
-                        <div className="flex items-center justify-between">
-                          <div className="flex-1 min-w-0">
-                            <h4 className="font-medium text-gray-900 truncate">{consulta.nombre}</h4>
-                            <p className="text-sm text-gray-600">{consulta.estudio}</p>
-                            <p className="text-xs text-gray-500">{consulta.educador}</p>
+                <div className="space-y-4">
+                  {/* Consultas */}
+                  {consultasDelDiaSeleccionado.length > 0 && (
+                    <div className="space-y-3">
+                      <h4 className="text-sm font-semibold text-blue-700 flex items-center gap-2">
+                        <ClipboardList className="h-4 w-4" />
+                        Consultas ({consultasDelDiaSeleccionado.length})
+                      </h4>
+                      <p className="text-xs text-gray-600 bg-blue-50 p-2 rounded-md">
+                        💡 Toca una consulta para editarla
+                      </p>
+                      <div className="space-y-2 max-h-48 overflow-y-auto">
+                        {consultasDelDiaSeleccionado.map((consulta) => (
+                          <div
+                            key={consulta.id}
+                            className={cn(
+                              'p-3 rounded-lg border cursor-pointer transition-all hover:shadow-md',
+                              'bg-white border-l-4',
+                              consulta.estado === 'Agendada' && 'border-l-blue-500',
+                              consulta.estado === 'Pendiente' && 'border-l-yellow-500',
+                              consulta.estado === 'Completa' && 'border-l-green-500'
+                            )}
+                            onClick={() => handleEditConsulta(consulta)}
+                          >
+                            <div className="flex items-center justify-between">
+                              <div className="flex-1 min-w-0">
+                                <h4 className="font-medium text-gray-900 truncate">{consulta.nombre}</h4>
+                                <p className="text-sm text-gray-600">{consulta.estudio}</p>
+                                <p className="text-xs text-gray-500">{consulta.educador}</p>
+                              </div>
+                              <div className={cn(
+                                'px-2 py-1 rounded-full text-xs font-medium text-white',
+                                consulta.estado === 'Agendada' && 'bg-blue-500',
+                                consulta.estado === 'Pendiente' && 'bg-yellow-500',
+                                consulta.estado === 'Completa' && 'bg-green-500'
+                              )}>
+                                {consulta.estado}
+                              </div>
+                            </div>
                           </div>
-                          <div className={cn(
-                            'px-2 py-1 rounded-full text-xs font-medium text-white',
-                            consulta.estado === 'Agendada' && 'bg-blue-500',
-                            consulta.estado === 'Pendiente' && 'bg-yellow-500',
-                            consulta.estado === 'Completa' && 'bg-green-500'
-                          )}>
-                            {consulta.estado}
-                          </div>
-                        </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
+                    </div>
+                  )}
+
+                  {/* SNAs */}
+                  {snasDelDiaSeleccionado.length > 0 && (
+                    <div className="space-y-3">
+                      <h4 className="text-sm font-semibold text-red-700 flex items-center gap-2">
+                        <AlertTriangle className="h-4 w-4" />
+                        SNAs ({snasDelDiaSeleccionado.length})
+                      </h4>
+                      <p className="text-xs text-gray-600 bg-red-50 p-2 rounded-md">
+                        ⚠️ Toca una SNA para editarla
+                      </p>
+                      <div className="space-y-2 max-h-48 overflow-y-auto">
+                        {snasDelDiaSeleccionado.map((sna) => (
+                          <div
+                            key={sna.id}
+                            className={cn(
+                              'p-3 rounded-lg border cursor-pointer transition-all hover:shadow-md',
+                              'bg-white border-l-4',
+                              sna.estado === 'Abierta' && 'border-l-red-500',
+                              sna.estado === 'Cerrada' && 'border-l-purple-500'
+                            )}
+                            onClick={() => handleEditSNA(sna)}
+                          >
+                            <div className="flex items-center justify-between">
+                              <div className="flex-1 min-w-0">
+                                <h4 className="font-medium text-gray-900 truncate">{sna.nombreAdolescente}</h4>
+                                <p className="text-sm text-gray-600">N° {sna.numeroDenuncia}</p>
+                                <p className="text-xs text-gray-500">
+                                  Lesiones: {sna.constatacionLesiones ? 'Sí' : 'No'}
+                                </p>
+                              </div>
+                              <div className={cn(
+                                'px-2 py-1 rounded-full text-xs font-medium text-white',
+                                sna.estado === 'Abierta' && 'bg-red-500',
+                                sna.estado === 'Cerrada' && 'bg-purple-500'
+                              )}>
+                                {sna.estado}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -494,15 +849,15 @@ export function InicioClient({ initialConsultas }: InicioClientProps) {
         <CardHeader className="p-4 sm:p-6">
           <CardTitle className="text-lg font-semibold text-gray-900 text-center flex items-center justify-center gap-2">
           <ClipboardList className="h-5 w-5" />
-          Casos del Mes Actual
+          Consultas del Mes Actual
         </CardTitle>
         </CardHeader>
         <CardContent className="p-4 sm:p-6">
           {currentMonthConsultas.length === 0 ? (
             <div className="text-center py-8 text-gray-500">
               <Calendar className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-              <p className="text-lg font-medium">No hay casos este mes</p>
-              <p className="text-sm">Los casos aparecerán aquí cuando se registren</p>
+              <p className="text-lg font-medium">No hay consultas este mes</p>
+              <p className="text-sm">Las consultas aparecerán aquí cuando se registren</p>
             </div>
           ) : (
             <div className="w-full overflow-x-auto">
@@ -545,6 +900,82 @@ export function InicioClient({ initialConsultas }: InicioClientProps) {
                           }
                         >
                           {consulta.estado}
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Tabla de SNAs del mes actual */}
+      <Card className="bg-white/95 backdrop-blur-sm border border-gray-100/30 shadow-sm">
+        <CardHeader className="p-4 sm:p-6">
+          <CardTitle className="text-lg font-semibold text-gray-900 text-center flex items-center justify-center gap-2">
+          <AlertTriangle className="h-5 w-5" />
+          SNAs del Mes Actual
+        </CardTitle>
+        </CardHeader>
+        <CardContent className="p-4 sm:p-6">
+          {currentMonthSNAs.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">
+              <AlertTriangle className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+              <p className="text-lg font-medium">No hay SNAs este mes</p>
+              <p className="text-sm">Las SNAs aparecerán aquí cuando se registren</p>
+            </div>
+          ) : (
+            <div className="w-full overflow-x-auto">
+              <Table className="w-full">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="text-xs">Adolescente</TableHead>
+                    <TableHead className="text-xs hidden md:table-cell">N° Denuncia</TableHead>
+                    <TableHead className="text-xs">F. Denuncia</TableHead>
+                    <TableHead className="text-xs hidden lg:table-cell">F. Cierre</TableHead>
+                    <TableHead className="text-xs hidden lg:table-cell">Retira</TableHead>
+                    <TableHead className="text-xs">Estado</TableHead>
+                    <TableHead className="text-xs">Lesiones</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {currentMonthSNAs.map((sna) => (
+                    <TableRow 
+                      key={sna.id} 
+                      className="text-xs cursor-pointer hover:bg-gray-50 transition-colors"
+                      onClick={() => handleEditSNA(sna)}
+                    >
+                      <TableCell className="font-medium">{sna.nombreAdolescente}</TableCell>
+                      <TableCell className="hidden md:table-cell">{sna.numeroDenuncia}</TableCell>
+                      <TableCell>{format(new Date(sna.fechaDenuncia), 'dd/MM/yyyy')}</TableCell>
+                      <TableCell className="hidden lg:table-cell">
+                        {sna.fechaCierre ? format(new Date(sna.fechaCierre), 'dd/MM/yyyy') : '-'}
+                      </TableCell>
+                      <TableCell className="hidden lg:table-cell">{sna.retira || '-'}</TableCell>
+                      <TableCell>
+                        <Badge 
+                          variant={
+                            sna.estado === 'Abierta' ? 'secondary' : 'outline'
+                          }
+                          className={
+                            sna.estado === 'Abierta' ? 'bg-yellow-100 text-yellow-800' :
+                            'bg-green-100 text-green-800'
+                          }
+                        >
+                          {sna.estado}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Badge 
+                          variant={sna.constatacionLesiones ? 'destructive' : 'outline'}
+                          className={
+                            sna.constatacionLesiones ? 'bg-red-100 text-red-800' :
+                            'bg-gray-100 text-gray-800'
+                          }
+                        >
+                          {sna.constatacionLesiones ? 'Sí' : 'No'}
                         </Badge>
                       </TableCell>
                     </TableRow>

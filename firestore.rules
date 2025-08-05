@@ -6,6 +6,11 @@ service cloud.firestore {
       allow read, write: if true;
     }
     
+    // Permitir acceso completo a la colección snas
+    match /snas/{document} {
+      allow read, write: if true;
+    }
+    
     // Regla por defecto - denegar todo lo demás
     match /{document=**} {
       allow read, write: if false;

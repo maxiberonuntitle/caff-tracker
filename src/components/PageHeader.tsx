@@ -7,12 +7,27 @@ import { useRouter } from 'next/navigation';
 
 type PageHeaderProps = {
   title: string;
+  subtitle?: string;
+  icon?: React.ComponentType<{ className?: string }>;
   action?: ReactNode;
+  onAction?: () => void;
+  actionLabel?: string;
+  actionIcon?: React.ComponentType<{ className?: string }>;
   showBackButton?: boolean;
   backUrl?: string;
 };
 
-export function PageHeader({ title, action, showBackButton = false, backUrl }: PageHeaderProps) {
+export function PageHeader({ 
+  title, 
+  subtitle, 
+  icon: Icon,
+  action, 
+  onAction, 
+  actionLabel, 
+  actionIcon: ActionIcon,
+  showBackButton = false, 
+  backUrl 
+}: PageHeaderProps) {
   const router = useRouter();
 
   const handleBack = () => {
@@ -21,6 +36,24 @@ export function PageHeader({ title, action, showBackButton = false, backUrl }: P
     } else {
       router.back();
     }
+  };
+
+  // Renderizar el botón de acción
+  const renderAction = () => {
+    if (action) {
+      return action;
+    }
+    
+    if (onAction && actionLabel) {
+      return (
+        <Button onClick={onAction} className="flex items-center gap-2">
+          {ActionIcon && <ActionIcon className="h-4 w-4" />}
+          {actionLabel}
+        </Button>
+      );
+    }
+    
+    return null;
   };
 
   return (
@@ -42,14 +75,20 @@ export function PageHeader({ title, action, showBackButton = false, backUrl }: P
       
       {/* Título centrado en el medio con espacio */}
       <div className="text-center px-16 md:px-20 lg:px-24 pt-12 md:pt-0">
-        <h1 className="text-2xl md:text-2xl lg:text-2xl font-bold tracking-tight font-headline text-gray-900 mb-2">{title}</h1>
+        <div className="flex items-center justify-center gap-2 mb-2">
+          {Icon && <Icon className="h-6 w-6 text-primary" />}
+          <h1 className="text-2xl md:text-2xl lg:text-2xl font-bold tracking-tight font-headline text-gray-900">{title}</h1>
+        </div>
+        {subtitle && (
+          <p className="text-gray-600 text-sm md:text-base mb-2">{subtitle}</p>
+        )}
         <div className="w-24 h-1 bg-gradient-to-r from-primary to-primary/60 mx-auto mt-4 rounded-full"></div>
       </div>
       
       {/* Botón de acción - Posición absoluta a la derecha */}
-      {action && (
+      {renderAction() && (
         <div className="absolute right-0 top-0 z-10 p-2">
-          {action}
+          {renderAction()}
         </div>
       )}
     </div>

@@ -2,14 +2,21 @@
 
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { ChevronUp, Plus } from 'lucide-react';
+import { ChevronUp, Plus, ClipboardList, AlertTriangle } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 type ScrollToTopProps = {
   onNewConsulta?: () => void;
+  onNewSNA?: () => void;
 }
 
-export function ScrollToTop({ onNewConsulta }: ScrollToTopProps) {
+export function ScrollToTop({ onNewConsulta, onNewSNA }: ScrollToTopProps) {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -38,23 +45,40 @@ export function ScrollToTop({ onNewConsulta }: ScrollToTopProps) {
 
   return (
     <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 flex flex-col gap-3">
-      {/* Fila superior: Nueva consulta (derecha) */}
-      {onNewConsulta && (
+      {/* Fila superior: Menú de nueva entrada (derecha) */}
+      {(onNewConsulta || onNewSNA) && (
         <div className="flex justify-end">
-          <Button
-            onClick={onNewConsulta}
-            className={cn(
-              "rounded-full shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-110",
-              "bg-green-500 hover:bg-green-600 text-white",
-              "size-10 sm:size-12 p-0",
-              isVisible 
-                ? "opacity-100 translate-y-0" 
-                : "opacity-0 translate-y-10 pointer-events-none"
-            )}
-            aria-label="Nueva consulta"
-          >
-            <Plus className="h-5 w-5 sm:h-6 sm:w-6" />
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                className={cn(
+                  "rounded-full shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-110",
+                  "bg-green-500 hover:bg-green-600 text-white",
+                  "size-10 sm:size-12 p-0",
+                  isVisible 
+                    ? "opacity-100 translate-y-0" 
+                    : "opacity-0 translate-y-10 pointer-events-none"
+                )}
+                aria-label="Nueva entrada"
+              >
+                <Plus className="h-5 w-5 sm:h-6 sm:w-6" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              {onNewConsulta && (
+                <DropdownMenuItem onClick={onNewConsulta} className="cursor-pointer">
+                  <ClipboardList className="mr-2 h-4 w-4" />
+                  Nueva Consulta
+                </DropdownMenuItem>
+              )}
+              {onNewSNA && (
+                <DropdownMenuItem onClick={onNewSNA} className="cursor-pointer">
+                  <AlertTriangle className="mr-2 h-4 w-4" />
+                  Nuevo SNA
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       )}
 

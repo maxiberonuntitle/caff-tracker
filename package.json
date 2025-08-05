@@ -9,6 +9,7 @@
     "build": "next build",
     "deploy": "firebase deploy --only hosting",
     "deploy:static": "npm run build && firebase deploy --only hosting",
+    "deploy:rules": "firebase deploy --only firestore:rules",
     "vercel:deploy": "vercel --prod",
     "vercel:dev": "vercel dev",
     "lint": "next lint",

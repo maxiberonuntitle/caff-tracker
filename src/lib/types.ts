@@ -11,3 +11,17 @@ export type Consulta = {
   observaciones?: string;
   estado: ConsultaStatus;
 };
+
+export type SNAStatus = 'Abierta' | 'Cerrada';
+
+export type SNA = {
+  id: string;
+  nombreAdolescente: string;
+  numeroDenuncia: string;
+  fechaDenuncia: string;
+  fechaCierre?: string;
+  estado: SNAStatus;
+  constatacionLesiones: boolean;
+  retira?: string;
+  comentarios?: string;
+};

@@ -8,7 +8,8 @@ import {
   Calendar, 
   Users, 
   Heart,
-  Zap
+  Zap,
+  AlertTriangle
 } from 'lucide-react';
 
 export function Footer() {
@@ -26,6 +27,12 @@ export function Footer() {
       label: 'Consultas',
       href: '/consultas',
       description: 'Gestión de consultas médicas'
+    },
+    {
+      icon: <AlertTriangle className="h-4 w-4" />,
+      label: 'SNA',
+      href: '/sna',
+      description: 'Salidas No Acordadas'
     },
     {
       icon: <Users className="h-4 w-4" />,
@@ -50,7 +57,7 @@ export function Footer() {
               <div className="w-8 h-8 bg-blue-200 rounded-lg flex items-center justify-center">
                 <Heart className="h-5 w-5 text-blue-600" />
               </div>
-                             <h3 className="text-xl font-bold text-gray-900">Gestión de Consultas Médicas</h3>
+                             <h3 className="text-xl font-bold text-gray-900">Gestión Integral de Centros CAFF</h3>
             </div>
           </div>
 
@@ -86,7 +93,7 @@ export function Footer() {
         <div className="border-t border-gray-200 mt-8 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
                          <div className="text-sm text-gray-500">
-               © 2025 Gestión de Consultas Médicas. Todos los derechos reservados.
+               © 2025 Gestión Integral de Centros CAFF. Todos los derechos reservados.
              </div>
             <div className="text-sm text-gray-500">
               v1.0.0

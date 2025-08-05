@@ -3,22 +3,30 @@
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Menu, X, LayoutDashboard, ClipboardList, Plus, PlusCircle, Info } from 'lucide-react';
+import { Menu, X, LayoutDashboard, ClipboardList, Plus, PlusCircle, Info, AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { ContentContainer } from './ContentContainer';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 const menuItems = [
   { href: '/', label: 'Inicio', icon: LayoutDashboard },
-  { href: '/consultas', label: 'Gestión de Consultas', icon: ClipboardList },
+  { href: '/consultas', label: 'Consultas médicas', icon: ClipboardList },
+  { href: '/sna', label: 'SNA', icon: AlertTriangle },
   { href: '/como-funciona', label: '¿Cómo funciona?', icon: Info },
 ];
 
 type NavbarProps = {
   onNewConsulta: () => void;
+  onNewSNA?: () => void;
 }
 
-export function Navbar({ onNewConsulta }: NavbarProps) {
+export function Navbar({ onNewConsulta, onNewSNA }: NavbarProps) {
   const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -83,7 +91,7 @@ export function Navbar({ onNewConsulta }: NavbarProps) {
                    "text-xs transition-all duration-300",
                    isScrolled ? "text-gray-600" : "text-white/90"
                  )}>
-                   Gestión de Consultas
+                   Gestión Integral
                  </p>
                </div>
              </Link>
@@ -112,18 +120,32 @@ export function Navbar({ onNewConsulta }: NavbarProps) {
                
                
 
-               <Button
-                 onClick={onNewConsulta}
-                 className={cn(
-                   "flex items-center gap-2 transition-all duration-300 hover:scale-105 shadow-lg text-sm",
-                   isScrolled
-                     ? "bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white"
-                     : "bg-white/95 hover:bg-white text-gray-900 shadow-xl"
-                 )}
-               >
-                 <PlusCircle className="size-4" />
-                 Nueva Consulta
-               </Button>
+               <DropdownMenu>
+                 <DropdownMenuTrigger asChild>
+                   <Button
+                     className={cn(
+                       "flex items-center justify-center transition-all duration-300 hover:scale-105 shadow-lg text-sm rounded-full",
+                       isScrolled
+                         ? "bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white size-10"
+                         : "bg-white/95 hover:bg-white text-gray-900 shadow-xl size-10"
+                     )}
+                   >
+                     <Plus className="size-4" />
+                   </Button>
+                 </DropdownMenuTrigger>
+                 <DropdownMenuContent align="end" className="w-48">
+                   <DropdownMenuItem onClick={onNewConsulta} className="cursor-pointer">
+                     <ClipboardList className="mr-2 h-4 w-4" />
+                     Nueva Consulta
+                   </DropdownMenuItem>
+                   {onNewSNA && (
+                     <DropdownMenuItem onClick={onNewSNA} className="cursor-pointer">
+                       <AlertTriangle className="mr-2 h-4 w-4" />
+                       Nuevo SNA
+                     </DropdownMenuItem>
+                   )}
+                 </DropdownMenuContent>
+               </DropdownMenu>
              </div>
 
 
@@ -183,21 +205,45 @@ export function Navbar({ onNewConsulta }: NavbarProps) {
                  </Link>
                ))}
                
-               <Button
-                 onClick={() => {
-                   onNewConsulta();
-                   closeMobileMenu();
-                 }}
-                 className={cn(
-                   "flex items-center gap-3 p-4 h-auto border-0 rounded-lg shadow-md hover:shadow-lg transition-all hover:scale-102 text-sm",
-                   isScrolled
-                     ? "bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white"
-                     : "bg-white/95 hover:bg-white text-gray-900 shadow-xl"
-                 )}
-               >
-                 <PlusCircle className="size-4" />
-                 <span className="font-medium">Nueva Consulta</span>
-               </Button>
+               <DropdownMenu>
+                 <DropdownMenuTrigger asChild>
+                   <Button
+                     className={cn(
+                       "flex items-center justify-center gap-3 p-4 h-auto border-0 rounded-lg shadow-md hover:shadow-lg transition-all hover:scale-102 text-sm",
+                       isScrolled
+                         ? "bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white"
+                         : "bg-white/95 hover:bg-white text-gray-900 shadow-xl"
+                     )}
+                   >
+                     <Plus className="size-4" />
+                     <span className="font-medium">Nuevo</span>
+                   </Button>
+                 </DropdownMenuTrigger>
+                 <DropdownMenuContent align="end" className="w-48">
+                   <DropdownMenuItem 
+                     onClick={() => {
+                       onNewConsulta();
+                       closeMobileMenu();
+                     }} 
+                     className="cursor-pointer"
+                   >
+                     <ClipboardList className="mr-2 h-4 w-4" />
+                     Nueva Consulta
+                   </DropdownMenuItem>
+                   {onNewSNA && (
+                     <DropdownMenuItem 
+                       onClick={() => {
+                         onNewSNA();
+                         closeMobileMenu();
+                       }} 
+                       className="cursor-pointer"
+                     >
+                       <AlertTriangle className="mr-2 h-4 w-4" />
+                       Nuevo SNA
+                     </DropdownMenuItem>
+                   )}
+                 </DropdownMenuContent>
+               </DropdownMenu>
              </div>
            </ContentContainer>
          </div>
