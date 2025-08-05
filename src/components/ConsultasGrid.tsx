@@ -223,7 +223,7 @@ function ConsultaCard({ consulta, onEdit, onDelete }: { consulta: Consulta, onEd
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                     <circle cx="12" cy="7" r="4"></circle>
                   </svg>
-                  INFORMACIÓN DEL PACIENTE
+                  INFORMACIÓN DEL ADOLESCENTE
                 </div>
                 <div class="field">
                   <span class="label">Nombre</span>
@@ -337,7 +337,7 @@ function ConsultaCard({ consulta, onEdit, onDelete }: { consulta: Consulta, onEd
         // Usar Web Share API para compartir el PDF
         await navigator.share({
           title: `Consulta Médica - ${consulta.nombre}`,
-          text: `🏥 CAFF CONSULTAS MÉDICAS\n\nConsulta médica de ${consulta.nombre}\n\n📋 Información:\n• Paciente: ${consulta.nombre}\n• Cédula: ${consulta.cedula}\n• Estudio: ${consulta.estudio}\n• Educador/a: ${consulta.educador}\n• Estado: ${consulta.estado}\n\n📅 Fecha Consulta: ${format(new Date(consulta.fechaConsulta), 'dd/MM/yyyy')}\n⏰ Fecha Control: ${format(new Date(consulta.fechaControl), 'dd/MM/yyyy')}\n\n📱 Compartido desde CAFF Consultas Médicas`,
+          text: `🏥 CAFF CONSULTAS MÉDICAS\n\nConsulta médica de ${consulta.nombre}\n\n📋 Información:\n• Adolescente: ${consulta.nombre}\n• Cédula: ${consulta.cedula}\n• Estudio: ${consulta.estudio}\n• Educador/a: ${consulta.educador}\n• Estado: ${consulta.estado}\n\n📅 Fecha Consulta: ${format(new Date(consulta.fechaConsulta), 'dd/MM/yyyy')}\n⏰ Fecha Control: ${format(new Date(consulta.fechaControl), 'dd/MM/yyyy')}\n\n📱 Compartido desde CAFF Consultas Médicas`,
           files: [pdfFile]
         });
       } else {
@@ -593,7 +593,7 @@ function ConsultaCard({ consulta, onEdit, onDelete }: { consulta: Consulta, onEd
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                     <circle cx="12" cy="7" r="4"></circle>
                   </svg>
-                  INFORMACIÓN DEL PACIENTE
+                  INFORMACIÓN DEL ADOLESCENTE
                 </div>
                 <div class="field">
                   <span class="label">Nombre</span>

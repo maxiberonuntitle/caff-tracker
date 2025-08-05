@@ -46,7 +46,10 @@ export function PageHeader({
     
     if (onAction && actionLabel) {
       return (
-        <Button onClick={onAction} className="flex items-center gap-2">
+        <Button 
+          onClick={onAction} 
+          className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white border-red-600 hover:border-red-700"
+        >
           {ActionIcon && <ActionIcon className="h-4 w-4" />}
           {actionLabel}
         </Button>

@@ -17,7 +17,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { PlusCircle, Printer, ChevronLeft, ChevronRight, Grid3X3, Calendar, Table, Search, User, UserCheck, Filter, FileText, CalendarDays, ChevronDown, Download } from 'lucide-react';
+import { PlusCircle, Printer, ChevronLeft, ChevronRight, Grid3X3, Calendar, Table, Search, User, UserCheck, Filter, FileText, CalendarDays, ChevronDown, Download, Stethoscope } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import type { Consulta } from '@/lib/types';
 import { ConsultaForm, studyOptions } from './consulta-form';
@@ -73,7 +73,7 @@ export function ConsultasClient({ initialConsultas }: ConsultasClientProps) {
   // Texto de búsqueda global para móvil
   const globalSearchText = useMemo(() => {
     const parts = [];
-    if (patientFilter) parts.push(`Paciente: ${patientFilter}`);
+    if (patientFilter) parts.push(`Adolescente: ${patientFilter}`);
     if (educatorFilter) parts.push(`Educador/a: ${educatorFilter}`);
     if (statusFilter !== 'todos') parts.push(`Estado: ${statusFilter}`);
     if (studyFilter !== 'todos') parts.push(`Estudio: ${studyFilter}`);
@@ -82,7 +82,7 @@ export function ConsultasClient({ initialConsultas }: ConsultasClientProps) {
       const toDate = dateFilter.to ? format(dateFilter.to, 'dd/MM/yyyy') : '';
       parts.push(`Fechas: ${fromDate}${toDate ? ` - ${toDate}` : ''}`);
     }
-    return parts.length > 0 ? parts.join(', ') : 'Búsqueda rápida por paciente';
+    return parts.length > 0 ? parts.join(', ') : 'Búsqueda rápida por adolescente';
   }, [patientFilter, educatorFilter, statusFilter, studyFilter, dateFilter]);
 
   // Manejar parámetro edit de la URL
@@ -431,7 +431,7 @@ export function ConsultasClient({ initialConsultas }: ConsultasClientProps) {
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                     <circle cx="12" cy="7" r="4"></circle>
                   </svg>
-                  INFORMACIÓN DEL PACIENTE
+                  INFORMACIÓN DEL ADOLESCENTE
                 </div>
                 <div class="field">
                   <span class="label">Nombre</span>
@@ -546,7 +546,7 @@ export function ConsultasClient({ initialConsultas }: ConsultasClientProps) {
         // Usar Web Share API para compartir el PDF
         await navigator.share({
           title: `Consulta Médica - ${consulta.nombre}`,
-          text: `🏥 CAFF CONSULTAS MÉDICAS\n\nConsulta médica de ${consulta.nombre}\n\n📋 Información:\n• Paciente: ${consulta.nombre}\n• Cédula: ${consulta.cedula}\n• Estudio: ${consulta.estudio}\n• Educador/a: ${consulta.educador}\n• Estado: ${consulta.estado}\n\n📅 Fecha Consulta: ${format(new Date(consulta.fechaConsulta), 'dd/MM/yyyy')}\n⏰ Fecha Control: ${format(new Date(consulta.fechaControl), 'dd/MM/yyyy')}\n\n📱 Compartido desde CAFF Consultas Médicas`,
+          text: `🏥 CAFF CONSULTAS MÉDICAS\n\nConsulta médica de ${consulta.nombre}\n\n📋 Información:\n• Adolescente: ${consulta.nombre}\n• Cédula: ${consulta.cedula}\n• Estudio: ${consulta.estudio}\n• Educador/a: ${consulta.educador}\n• Estado: ${consulta.estado}\n\n📅 Fecha Consulta: ${format(new Date(consulta.fechaConsulta), 'dd/MM/yyyy')}\n⏰ Fecha Control: ${format(new Date(consulta.fechaControl), 'dd/MM/yyyy')}\n\n📱 Compartido desde CAFF Consultas Médicas`,
           files: [pdfFile]
         });
         
@@ -1073,7 +1073,7 @@ export function ConsultasClient({ initialConsultas }: ConsultasClientProps) {
               <table>
                 <thead>
                   <tr>
-                    <th>Paciente</th>
+                    <th>Adolescente</th>
                     <th>Cédula</th>
                     <th>Estudio</th>
                     <th>Educador/a</th>
@@ -1318,7 +1318,7 @@ export function ConsultasClient({ initialConsultas }: ConsultasClientProps) {
               <table>
                 <thead>
                   <tr>
-                    <th>Paciente</th>
+                    <th>Adolescente</th>
                     <th>Cédula</th>
                     <th>Estudio</th>
                     <th>Educador/a</th>
@@ -1447,22 +1447,14 @@ export function ConsultasClient({ initialConsultas }: ConsultasClientProps) {
   return (
     <>
       <PageHeader
-        title="Gestión de Consultas"
+        title="Consultas"
+        subtitle="Consultas Médicas"
+        icon={Stethoscope}
+        onAction={handleAddConsulta}
+        actionLabel="Nueva"
+        actionIcon={PlusCircle}
         showBackButton={true}
         backUrl="/"
-        action={
-          <div className="flex justify-center gap-2">
-            <Button 
-              onClick={handleAddConsulta} 
-              className={cn(
-                "w-full md:w-auto shadow-md hover:shadow-lg transition-all transform hover:scale-105 bg-green-500/80 hover:bg-green-500/90 text-white"
-                )}
-            >
-              <PlusCircle className="mr-2 h-4 w-4" />
-              Nueva
-            </Button>
-          </div>
-        }
       />
 
       <div className="space-y-6">
@@ -1470,28 +1462,26 @@ export function ConsultasClient({ initialConsultas }: ConsultasClientProps) {
         
 
         
-        <Card className="print-hidden border-2 border-gray-100 shadow-sm">
-          <CardHeader className="p-4 pb-3">
-            <CardTitle className="text-base font-semibold text-gray-800 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Search className="h-5 w-5" />
-                Búsqueda
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-gray-500">Filtros</span>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setFiltersExpanded(!filtersExpanded)}
-                  className="p-2 h-8 w-8"
-                >
-                  <ChevronDown className={cn(
-                    "h-4 w-4 transition-transform duration-200",
-                    filtersExpanded && "rotate-180"
-                  )} />
-                </Button>
-              </div>
-            </CardTitle>
+        <Card>
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Filter className="h-5 w-5" />
+                Filtros
+              </CardTitle>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setFiltersExpanded(!filtersExpanded)}
+                className="flex items-center gap-1"
+              >
+                {filtersExpanded ? 'Contraer' : 'Expandir'}
+                <ChevronDown className={cn(
+                  "h-4 w-4 transition-transform",
+                  filtersExpanded && "rotate-180"
+                )} />
+              </Button>
+            </div>
           </CardHeader>
           <CardContent className="p-4 pt-0">
                         {/* Vista contraída */}
@@ -1515,7 +1505,7 @@ export function ConsultasClient({ initialConsultas }: ConsultasClientProps) {
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
                     <User className="h-4 w-4" />
-                    Paciente
+                    Adolescente
                   </label>
                   <Input 
                     placeholder="Buscar por nombre..."
@@ -1699,6 +1689,9 @@ export function ConsultasClient({ initialConsultas }: ConsultasClientProps) {
                 consultas={filteredConsultas}
                 onAddConsulta={handleAddConsulta}
                 onEditConsulta={handleEditConsulta}
+                onDeleteConsulta={handleDeleteConfirmation}
+                onSharePDF={handleSharePDF}
+                onDownloadPDF={handleDownloadPDF}
               />
             )}
           </TabsContent>
@@ -1716,6 +1709,8 @@ export function ConsultasClient({ initialConsultas }: ConsultasClientProps) {
                       consultas={paginatedConsultas}
                       onEdit={handleEditConsulta}
                       onDelete={handleDeleteConfirmation}
+                      onSharePDF={handleSharePDF}
+                      onDownloadPDF={handleDownloadPDF}
                     />
                   )}
                 </CardContent>

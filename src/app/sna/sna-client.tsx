@@ -1596,11 +1596,11 @@ export function SNAClient({ initialSNAs }: SNAClientProps) {
       <div className="space-y-6">
         {/* Header */}
         <PageHeader
-          title="Gestión de SNAs"
+          title="SNAs"
           subtitle="Salidas No Acordadas"
           icon={AlertTriangle}
           onAction={handleAddSNA}
-          actionLabel="Nueva SNA"
+          actionLabel="Nueva"
           actionIcon={PlusCircle}
           showBackButton={true}
           backUrl="/"

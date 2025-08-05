@@ -1,6 +1,7 @@
 
 'use client';
 import { useState } from 'react';
+import { usePathname } from 'next/navigation';
 import { Navbar } from './Navbar';
 import { ContentContainer } from './ContentContainer';
 import { ConsultaForm } from '@/app/consultas/consulta-form';
@@ -15,6 +16,7 @@ import { Footer } from './Footer';
 
 export function MainLayout({ children }: { children: React.ReactNode }) {
   const { toast } = useToast();
+  const pathname = usePathname();
   const [isConsultaFormOpen, setIsConsultaFormOpen] = useState(false);
   const [isSNAFormOpen, setIsSNAFormOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -69,7 +71,11 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
   };
   
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+    <div className={`min-h-screen ${
+      pathname === '/sna' 
+        ? 'bg-gradient-to-br from-orange-50 via-orange-25 to-orange-100/30' 
+        : 'bg-gradient-to-br from-blue-50 via-white to-indigo-50'
+    }`}>
       <Navbar 
         onNewConsulta={() => setIsConsultaFormOpen(true)}
         onNewSNA={() => setIsSNAFormOpen(true)}

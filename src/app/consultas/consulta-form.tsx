@@ -307,11 +307,11 @@ export function ConsultaForm({ isOpen, setIsOpen, onSubmit, onDelete, onShare, o
                   <FormItem>
                     <FormLabel className="text-gray-700 font-medium text-sm flex items-center gap-2">
                     <User className="h-4 w-4" />
-                    Nombre del Paciente
+                    Nombre del Adolescente
                   </FormLabel>
                     <FormControl>
                       <Input 
-                        placeholder="Ingrese el nombre completo" 
+                        placeholder="Ingrese el nombre completo del adolescente" 
                         {...field} 
                         className="bg-white/90 border-gray-200 focus:border-gray-400 focus:ring-gray-400 placeholder:text-gray-400 h-9"
                       />

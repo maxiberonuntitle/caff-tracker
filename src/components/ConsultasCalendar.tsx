@@ -4,7 +4,8 @@ import { useState } from 'react';
 import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { PlusCircle, CalendarDays } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { PlusCircle, CalendarDays, User, CreditCard, FileText, UserCheck, Clock, Stethoscope, Edit, Share2, Download, X } from 'lucide-react';
 import { format, isSameDay, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
 import type { Consulta } from '@/lib/types';
@@ -14,6 +15,9 @@ type ConsultasCalendarProps = {
   consultas: Consulta[];
   onAddConsulta: () => void;
   onEditConsulta: (consulta: Consulta) => void;
+  onDeleteConsulta?: (id: string) => void;
+  onSharePDF?: (consulta: Consulta) => void;
+  onDownloadPDF?: (consulta: Consulta) => void;
 };
 
 const getStatusColor = (estado: string) => {
@@ -29,9 +33,18 @@ const getStatusColor = (estado: string) => {
   }
 };
 
-export function ConsultasCalendar({ consultas, onAddConsulta, onEditConsulta }: ConsultasCalendarProps) {
+export function ConsultasCalendar({ 
+  consultas, 
+  onAddConsulta, 
+  onEditConsulta, 
+  onDeleteConsulta,
+  onSharePDF,
+  onDownloadPDF 
+}: ConsultasCalendarProps) {
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [selectedDay, setSelectedDay] = useState<Date | undefined>(new Date());
+  const [selectedConsulta, setSelectedConsulta] = useState<Consulta | null>(null);
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
 
   // Agrupar consultas por fecha
   const consultasPorFecha = consultas.reduce((acc, consulta) => {
@@ -89,6 +102,30 @@ export function ConsultasCalendar({ consultas, onAddConsulta, onEditConsulta }: 
   const consultasDelDiaSeleccionado = selectedDay 
     ? consultasPorFecha[format(selectedDay, 'yyyy-MM-dd')] || []
     : [];
+
+  // Función para abrir detalles de consulta
+  const handleConsultaClick = (consulta: Consulta) => {
+    setSelectedConsulta(consulta);
+    setIsDetailOpen(true);
+  };
+
+  // Función para obtener el badge de estado
+  const getStatusBadge = (estado: string) => {
+    const colors = {
+      'Agendada': 'bg-blue-100 text-blue-800 border-blue-200',
+      'Pendiente': 'bg-yellow-100 text-yellow-800 border-yellow-200',
+      'Completa': 'bg-green-100 text-green-800 border-green-200'
+    };
+    
+    return (
+      <span className={cn(
+        'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border',
+        colors[estado as keyof typeof colors] || 'bg-gray-100 text-gray-800 border-gray-200'
+      )}>
+        {estado}
+      </span>
+    );
+  };
 
   return (
     <div className="space-y-6">
@@ -151,7 +188,7 @@ export function ConsultasCalendar({ consultas, onAddConsulta, onEditConsulta }: 
               ) : (
                 <div className="space-y-3">
                   <p className="text-xs text-gray-600 bg-blue-50 p-2 rounded-md">
-                    💡 Toca una consulta para editarla
+                    💡 Toca una consulta para ver los detalles
                   </p>
                   <div className="space-y-2 max-h-96 overflow-y-auto">
                     {consultasDelDiaSeleccionado.map((consulta) => (
@@ -164,7 +201,7 @@ export function ConsultasCalendar({ consultas, onAddConsulta, onEditConsulta }: 
                         consulta.estado === 'Pendiente' && 'border-l-yellow-500',
                         consulta.estado === 'Completa' && 'border-l-green-500'
                       )}
-                      onClick={() => onEditConsulta(consulta)}
+                      onClick={() => handleConsultaClick(consulta)}
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex-1 min-w-0">
@@ -188,6 +225,153 @@ export function ConsultasCalendar({ consultas, onAddConsulta, onEditConsulta }: 
           </div>
         </CardContent>
       </Card>
+
+      {/* Modal de detalles de consulta */}
+      <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}>
+        <DialogContent className="sm:max-w-[600px] max-h-[85vh] overflow-y-auto bg-gradient-to-br from-slate-50 to-gray-50 border border-gray-200 shadow-lg">
+          <DialogHeader className="bg-gradient-to-r from-slate-100 to-gray-100 text-gray-800 rounded-t-lg -mt-6 -mx-6 px-6 py-3 mb-4 border-b border-gray-200">
+            <DialogTitle className="text-xl font-semibold flex items-center gap-3">
+              <div className="p-2 bg-blue-100 rounded-lg">
+                <CalendarDays className="h-5 w-5 text-blue-600" />
+              </div>
+              Detalles de la Consulta
+            </DialogTitle>
+          </DialogHeader>
+          
+          {selectedConsulta && (
+            <div className="space-y-4 sm:space-y-6">
+              {/* Información básica */}
+              <div className="grid grid-cols-1 gap-3 sm:gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <h4 className="font-semibold text-sm text-muted-foreground flex items-center gap-2">
+                    <User className="h-3 w-3 sm:h-4 sm:w-4" />
+                    INFORMACIÓN DEL ADOLESCENTE
+                  </h4>
+                  <div className="space-y-1 text-xs sm:text-sm">
+                    <div><strong>Nombre:</strong> {selectedConsulta.nombre}</div>
+                    <div><strong>Cédula:</strong> {selectedConsulta.cedula}</div>
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <h4 className="font-semibold text-sm text-muted-foreground flex items-center gap-2">
+                    <Stethoscope className="h-3 w-3 sm:h-4 sm:w-4" />
+                    ESTADO Y ESTUDIO
+                  </h4>
+                  <div className="space-y-2">
+                    <div>{getStatusBadge(selectedConsulta.estado)}</div>
+                    <div className="text-xs sm:text-sm">
+                      <strong>Estudio:</strong> {selectedConsulta.estudio}
+                    </div>
+                    <div className="text-xs sm:text-sm">
+                      <strong>Educador/a:</strong> {selectedConsulta.educador}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Fechas */}
+              <div className="grid grid-cols-1 gap-3 sm:gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <h4 className="font-semibold text-sm text-muted-foreground flex items-center gap-2">
+                    <CalendarDays className="h-3 w-3 sm:h-4 sm:w-4" />
+                    FECHA DE CONSULTA
+                  </h4>
+                  <div className="text-xs sm:text-sm">
+                    {format(new Date(selectedConsulta.fechaConsulta), 'EEEE, d MMMM yyyy', { locale: es })}
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <h4 className="font-semibold text-sm text-muted-foreground flex items-center gap-2">
+                    <Clock className="h-3 w-3 sm:h-4 sm:w-4" />
+                    FECHA DE CONTROL
+                  </h4>
+                  <div className="text-xs sm:text-sm">
+                    {format(new Date(selectedConsulta.fechaControl), 'EEEE, d MMMM yyyy', { locale: es })}
+                  </div>
+                </div>
+              </div>
+              
+              {/* Observaciones */}
+              {selectedConsulta.observaciones && (
+                <div className="space-y-2">
+                  <h4 className="font-semibold text-sm text-muted-foreground flex items-center gap-2">
+                    <FileText className="h-3 w-3 sm:h-4 sm:w-4" />
+                    OBSERVACIONES
+                  </h4>
+                  <div className="bg-muted p-2 sm:p-3 rounded-md text-xs sm:text-sm">
+                    {selectedConsulta.observaciones}
+                  </div>
+                </div>
+              )}
+              
+              {/* Acciones */}
+              <div className="flex flex-wrap gap-2 pt-3 sm:pt-4 border-t">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    onEditConsulta(selectedConsulta);
+                    setIsDetailOpen(false);
+                  }}
+                  className="flex items-center gap-2 text-xs sm:text-sm h-8 sm:h-9"
+                >
+                  <Edit className="h-3 w-3 sm:h-4 sm:w-4" />
+                  <span className="hidden sm:inline">Editar</span>
+                </Button>
+                
+                {onSharePDF && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      onSharePDF(selectedConsulta);
+                      setIsDetailOpen(false);
+                    }}
+                    className="flex items-center gap-2 text-xs sm:text-sm h-8 sm:h-9"
+                  >
+                    <Share2 className="h-3 w-3 sm:h-4 sm:w-4" />
+                    <span className="hidden sm:inline">Compartir PDF</span>
+                  </Button>
+                )}
+                
+                {onDownloadPDF && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      onDownloadPDF(selectedConsulta);
+                      setIsDetailOpen(false);
+                    }}
+                    className="flex items-center gap-2 text-xs sm:text-sm h-8 sm:h-9"
+                  >
+                    <Download className="h-3 w-3 sm:h-4 sm:w-4" />
+                    <span className="hidden sm:inline">Descargar PDF</span>
+                  </Button>
+                )}
+                
+                {onDeleteConsulta && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      if (window.confirm('¿Estás seguro de que quieres eliminar esta consulta? Esta acción no se puede deshacer.')) {
+                        onDeleteConsulta(selectedConsulta.id);
+                        setIsDetailOpen(false);
+                      }
+                    }}
+                    className="flex items-center gap-2 text-xs sm:text-sm h-8 sm:h-9 text-red-600 border-red-300 hover:bg-red-50"
+                  >
+                    <X className="h-3 w-3 sm:h-4 sm:w-4" />
+                    <span className="hidden sm:inline">Eliminar</span>
+                  </Button>
+                )}
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 } 
