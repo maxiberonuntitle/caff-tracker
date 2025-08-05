@@ -33,7 +33,6 @@ type SNACalendarProps = {
   snas: SNA[];
   onEdit?: (sna: SNA) => void;
   onDelete?: (id: string) => void;
-  onShare?: (sna: SNA) => void;
   onSharePDF?: (sna: SNA) => void;
   onDownloadPDF?: (sna: SNA) => void;
 };
@@ -53,7 +52,6 @@ export function SNACalendar({
   snas, 
   onEdit, 
   onDelete, 
-  onShare, 
   onSharePDF, 
   onDownloadPDF 
 }: SNACalendarProps) {

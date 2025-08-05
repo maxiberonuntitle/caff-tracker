@@ -13,12 +13,11 @@ type SNAGridProps = {
   snas: SNA[];
   onEdit: (sna: SNA) => void;
   onDelete: (id: string) => void;
-  onShare: (sna: SNA) => void;
   onSharePDF: (sna: SNA) => void;
   onDownloadPDF: (sna: SNA) => void;
 };
 
-export function SNAGrid({ snas, onEdit, onDelete, onShare, onSharePDF, onDownloadPDF }: SNAGridProps) {
+export function SNAGrid({ snas, onEdit, onDelete, onSharePDF, onDownloadPDF }: SNAGridProps) {
   if (snas.length === 0) {
     return (
       <div className="text-center py-8 sm:py-12 text-muted-foreground">
@@ -32,12 +31,11 @@ export function SNAGrid({ snas, onEdit, onDelete, onShare, onSharePDF, onDownloa
   return (
     <div className="grid gap-3 sm:gap-4 p-2 sm:p-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {snas.map(sna => (
-        <SNACard 
+                <SNACard
           key={sna.id} 
           sna={sna} 
           onEdit={onEdit} 
           onDelete={onDelete}
-          onShare={onShare}
           onSharePDF={onSharePDF}
           onDownloadPDF={onDownloadPDF}
         />
@@ -50,14 +48,12 @@ function SNACard({
   sna, 
   onEdit, 
   onDelete, 
-  onShare, 
   onSharePDF, 
   onDownloadPDF 
 }: { 
   sna: SNA, 
   onEdit: (sna: SNA) => void, 
   onDelete: (id: string) => void,
-  onShare: (sna: SNA) => void,
   onSharePDF: (sna: SNA) => void,
   onDownloadPDF: (sna: SNA) => void
 }) {

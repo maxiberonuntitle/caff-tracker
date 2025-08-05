@@ -46,7 +46,6 @@ type SNATableProps = {
   snas: SNA[];
   onEdit?: (sna: SNA) => void;
   onDelete?: (id: string) => void;
-  onShare?: (sna: SNA) => void;
   onSharePDF?: (sna: SNA) => void;
   onDownloadPDF?: (sna: SNA) => void;
 };
@@ -55,7 +54,6 @@ export function SNATable({
   snas, 
   onEdit, 
   onDelete, 
-  onShare, 
   onSharePDF, 
   onDownloadPDF 
 }: SNATableProps) {
@@ -143,36 +141,6 @@ export function SNATable({
         No
       </Badge>
     );
-  };
-
-  const handleShare = (sna: SNA) => {
-    const details = [
-      `⚠️ CAFF SALIDAS NO ACORDADAS`,
-      `SALIDA NO ACORDADA`,
-      `Fecha de generación: ${format(new Date(), 'dd/MM/yyyy HH:mm')}`,
-      ``,
-      `👤 INFORMACIÓN DEL ADOLESCENTE`,
-      `📝 Nombre: ${sna.nombreAdolescente}`,
-      `📋 N° Denuncia: ${sna.numeroDenuncia}`,
-      ``,
-      `📅 DETALLES DE LA SNA`,
-      `📅 Fecha Denuncia: ${format(new Date(sna.fechaDenuncia), 'dd/MM/yyyy')}`,
-      `📊 Estado: ${sna.estado}`,
-      `🛡️ Constatación de lesiones: ${sna.constatacionLesiones ? 'Sí' : 'No'}`,
-      sna.fechaCierre ? `⏰ Fecha Cierre: ${format(new Date(sna.fechaCierre), 'dd/MM/yyyy')}` : null,
-      sna.retira ? `👥 Retira: ${sna.retira}` : null,
-      sna.comentarios ? [
-        ``,
-        `💬 COMENTARIOS`,
-        `${sna.comentarios}`
-      ] : null,
-      ``,
-      `📱 Compartido desde CAFF Salidas No Acordadas`,
-      `🕐 ${format(new Date(), 'dd/MM/yyyy HH:mm')}`
-    ].filter(Boolean).flat().join('\n');
-    
-    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(details)}`;
-    window.open(whatsappUrl, '_blank');
   };
 
   const rowColorClass: { [key in SNA['estado']]?: string } = {
@@ -297,12 +265,6 @@ export function SNATable({
                   <DropdownMenuContent align="end">
                     {onEdit && (
                       <DropdownMenuItem onClick={() => onEdit(sna)}>Editar</DropdownMenuItem>
-                    )}
-                    {onShare && (
-                      <DropdownMenuItem onClick={() => handleShare(sna)} className="flex gap-2">
-                        Compartir
-                        <Share2 className="h-3 w-3" />
-                      </DropdownMenuItem>
                     )}
                     {onSharePDF && (
                       <DropdownMenuItem onClick={() => onSharePDF(sna)} className="flex gap-2">

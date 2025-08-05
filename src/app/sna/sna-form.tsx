@@ -62,7 +62,6 @@ type SNAFormProps = {
   setIsOpen: (open: boolean) => void;
   onSubmit: (data: SnaFormData | SNA) => void;
   onDelete?: (id: string) => void;
-  onShare?: (sna: SNA) => void;
   onSharePDF?: (sna: SNA) => void;
   onDownloadPDF?: (sna: SNA) => void;
   initialData?: SNA | null;
@@ -73,7 +72,6 @@ export function SNAForm({
   setIsOpen,
   onSubmit,
   onDelete,
-  onShare,
   onSharePDF,
   onDownloadPDF,
   initialData,
@@ -197,11 +195,6 @@ export function SNAForm({
     } finally {
       setIsDeleting(false);
     }
-  };
-
-  const handleShare = () => {
-    if (!initialData || !onShare) return;
-    onShare(initialData);
   };
 
   const handleSharePDF = () => {
@@ -407,18 +400,6 @@ export function SNAForm({
             <div className="flex flex-wrap justify-start gap-2 w-full sm:w-auto">
               {isEditing && (
                 <>
-                  {onShare && (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={handleShare}
-                      className="flex items-center gap-2 text-xs sm:text-sm h-9 sm:h-10"
-                    >
-                      <Share2 className="h-3 w-3 sm:h-4 sm:w-4" />
-                      <span className="hidden sm:inline">Compartir</span>
-                    </Button>
-                  )}
-                  
                   {onSharePDF && (
                     <Button
                       type="button"

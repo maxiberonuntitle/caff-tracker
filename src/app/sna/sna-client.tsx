@@ -268,36 +268,6 @@ export function SNAClient({ initialSNAs }: SNAClientProps) {
     }
   };
 
-  const handleShare = (sna: SNA) => {
-    const details = [
-      `🏥 CAFF CONSULTAS MÉDICAS`,
-      `SALIDA NO ACORDADA (SNA)`,
-      `Fecha de generación: ${format(new Date(), 'dd/MM/yyyy HH:mm')}`,
-      ``,
-      `📋 INFORMACIÓN DEL ADOLESCENTE`,
-      `👤 Nombre: ${sna.nombreAdolescente}`,
-      `🆔 Número de Denuncia: ${sna.numeroDenuncia}`,
-      ``,
-      `📅 DETALLES DE LA SNA`,
-      `📅 Fecha de Denuncia: ${format(new Date(sna.fechaDenuncia), 'dd/MM/yyyy')}`,
-      `📊 Estado: ${sna.estado}`,
-      `🔍 Constatación de Lesiones: ${sna.constatacionLesiones ? 'Sí' : 'No'}`,
-      sna.fechaCierre ? `📅 Fecha de Cierre: ${format(new Date(sna.fechaCierre), 'dd/MM/yyyy')}` : null,
-      sna.retira ? `👨‍⚕️ Retira: ${sna.retira}` : null,
-      sna.comentarios ? [
-        ``,
-        `📝 COMENTARIOS`,
-        `${sna.comentarios}`
-      ] : null,
-      ``,
-      `📱 Compartido desde CAFF Consultas Médicas`,
-      `🕐 ${format(new Date(), 'dd/MM/yyyy HH:mm')}`
-    ].filter(Boolean).flat().join('\n');
-    
-    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(details)}`;
-    window.open(whatsappUrl, '_blank');
-  };
-
   const handleSharePDF = async (sna: SNA) => {
     // Importar html2pdf dinámicamente
     const html2pdf = (await import('html2pdf.js')).default;
@@ -1780,7 +1750,6 @@ export function SNAClient({ initialSNAs }: SNAClientProps) {
                 snas={filteredSNAs}
                 onEdit={handleEditSNA}
                 onDelete={handleDeleteConfirmation}
-                onShare={handleShare}
                 onSharePDF={handleSharePDF}
                 onDownloadPDF={handleDownloadPDF}
               />
@@ -1802,7 +1771,6 @@ export function SNAClient({ initialSNAs }: SNAClientProps) {
                 snas={filteredSNAs}
                 onEdit={handleEditSNA}
                 onDelete={handleDeleteConfirmation}
-                onShare={handleShare}
                 onSharePDF={handleSharePDF}
                 onDownloadPDF={handleDownloadPDF}
               />
@@ -1824,7 +1792,6 @@ export function SNAClient({ initialSNAs }: SNAClientProps) {
                 snas={paginatedSNAs}
                 onEdit={handleEditSNA}
                 onDelete={handleDeleteConfirmation}
-                onShare={handleShare}
                 onSharePDF={handleSharePDF}
                 onDownloadPDF={handleDownloadPDF}
               />
@@ -1918,7 +1885,6 @@ export function SNAClient({ initialSNAs }: SNAClientProps) {
         setIsOpen={setIsFormOpen}
         onSubmit={handleFormSubmit}
         onDelete={handleDeleteConfirmation}
-        onShare={handleShare}
         onSharePDF={handleSharePDF}
         onDownloadPDF={handleSharePDF}
         initialData={selectedSNA}
