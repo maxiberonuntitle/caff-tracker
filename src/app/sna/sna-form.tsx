@@ -109,11 +109,24 @@ export function SNAForm({
   // Reset form when initialData changes
   useEffect(() => {
     if (initialData) {
+      // Convert ISO dates to YYYY-MM-DD format for date inputs
+      const formatDateForInput = (dateString: string | undefined): string => {
+        if (!dateString) return '';
+        try {
+          const date = new Date(dateString);
+          if (isNaN(date.getTime())) return '';
+          return date.toISOString().split('T')[0]; // Returns YYYY-MM-DD
+        } catch (error) {
+          console.error('Error formatting date:', error);
+          return '';
+        }
+      };
+
       reset({
         nombreAdolescente: initialData.nombreAdolescente,
         numeroDenuncia: initialData.numeroDenuncia,
-        fechaDenuncia: initialData.fechaDenuncia,
-        fechaCierre: initialData.fechaCierre || '',
+        fechaDenuncia: formatDateForInput(initialData.fechaDenuncia),
+        fechaCierre: formatDateForInput(initialData.fechaCierre),
         estado: initialData.estado,
         constatacionLesiones: initialData.constatacionLesiones,
         retira: initialData.retira || '',
@@ -136,15 +149,33 @@ export function SNAForm({
   const handleFormSubmit = async (data: SnaFormData) => {
     setIsSubmitting(true);
     try {
+      // Convert date strings to ISO format for storage
+      const convertDateToISO = (dateString: string): string => {
+        if (!dateString) return '';
+        try {
+          const date = new Date(dateString + 'T00:00:00.000Z');
+          return date.toISOString();
+        } catch (error) {
+          console.error('Error converting date to ISO:', error);
+          return dateString;
+        }
+      };
+
+      const processedData = {
+        ...data,
+        fechaDenuncia: convertDateToISO(data.fechaDenuncia),
+        fechaCierre: data.fechaCierre ? convertDateToISO(data.fechaCierre) : undefined,
+      };
+
       if (initialData) {
         // Editing existing SNA
         await onSubmit({
           ...initialData,
-          ...data,
+          ...processedData,
         });
       } else {
         // Creating new SNA
-        await onSubmit(data);
+        await onSubmit(processedData);
       }
       setIsOpen(false);
     } catch (error) {
