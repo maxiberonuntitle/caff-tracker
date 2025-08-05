@@ -17,7 +17,7 @@ import {
 const menuItems = [
   { href: '/', label: 'Inicio', icon: LayoutDashboard },
   { href: '/consultas', label: 'Consultas médicas', icon: ClipboardList },
-  { href: '/sna', label: 'SNA', icon: AlertTriangle },
+  { href: '/sna', label: 'SNAs', icon: AlertTriangle },
   { href: '/como-funciona', label: '¿Cómo funciona?', icon: Info },
 ];
 
