@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Area, AreaChart, ResponsiveContainer, Tooltip, Bar, BarChart, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -427,7 +427,7 @@ type InicioClientProps = {
 export function InicioClient({ initialConsultas, initialSNAs }: InicioClientProps) {
   const { toast } = useToast();
   const router = useRouter();
-  const [selectedDay, setSelectedDay] = useState<Date | undefined>(new Date());
+  const [selectedDay, setSelectedDay] = useState<Date | undefined>(undefined);
   const [selectedConsulta, setSelectedConsulta] = useState<Consulta | null>(null);
   const [selectedSNA, setSelectedSNA] = useState<SNA | null>(null);
   const [isConsultaDetailOpen, setIsConsultaDetailOpen] = useState(false);
@@ -435,6 +435,13 @@ export function InicioClient({ initialConsultas, initialSNAs }: InicioClientProp
   const [isLoading, setIsLoading] = useState(false);
   const [consultas, setConsultas] = useState<Consulta[]>(initialConsultas);
   const [snas, setSNAs] = useState<SNA[]>(initialSNAs);
+
+  // Inicializar fecha en el cliente para evitar problemas de hidratación
+  useEffect(() => {
+    if (!selectedDay) {
+      setSelectedDay(new Date());
+    }
+  }, [selectedDay]);
 
   const totalConsultas = consultas.length;
   const pendingConsultas = consultas.filter(v => v.estado === 'Pendiente').length;
@@ -691,9 +698,9 @@ export function InicioClient({ initialConsultas, initialSNAs }: InicioClientProp
         <body>
           <div class="container">
             <div class="header">
-              <h1>🏥 Centro CAFF Gestión Integral</h1>
-              <h2>📋 INFORME DE CONSULTA MÉDICA</h2>
-              <p>📅 Documento generado el: ${format(new Date(), 'dd/MM/yyyy')} a las ${format(new Date(), 'HH:mm')} hrs</p>
+              <h1>Centro CAFF Gestión Integral</h1>
+              <h2>INFORME DE CONSULTA MÉDICA</h2>
+              <p>Documento generado el: ${format(new Date(), 'dd/MM/yyyy')} a las ${format(new Date(), 'HH:mm')} hrs</p>
             </div>
             
             <div class="content">
@@ -761,22 +768,22 @@ export function InicioClient({ initialConsultas, initialSNAs }: InicioClientProp
                   </svg>
                   OBSERVACIONES MÉDICAS
                 </div>
-                <div class="observations ${!consulta.observaciones ? 'empty' : ''}">${consulta.observaciones || '📝 Espacio para observaciones médicas:\n\n• Evaluación realizada:\n• Diagnóstico:\n• Tratamiento indicado:\n• Recomendaciones:\n• Seguimiento requerido:'}</div>
+                <div class="observations ${!consulta.observaciones ? 'empty' : ''}">${consulta.observaciones || 'Espacio para observaciones médicas:\n\n• Evaluación realizada:\n• Diagnóstico:\n• Tratamiento indicado:\n• Recomendaciones:\n• Seguimiento requerido:'}</div>
               </div>
             </div>
             
             <div class="footer">
               <div class="footer-left">
-                <p>🏥 Centro CAFF Gestión Integral</p>
+                <p>Centro CAFF Gestión Integral</p>
                 <p>Sistema de Gestión Integral</p>
               </div>
               <div class="footer-center">
-                <p>📋 Documento Oficial</p>
+                <p>Documento Oficial</p>
                 <p>Consulta Médica - ${consulta.nombre}</p>
               </div>
               <div class="footer-right">
-                <p>📅 ${format(new Date(), 'dd/MM/yyyy')}</p>
-                <p>⏰ ${format(new Date(), 'HH:mm')} hrs</p>
+                <p>${format(new Date(), 'dd/MM/yyyy')}</p>
+                <p>${format(new Date(), 'HH:mm')} hrs</p>
               </div>
             </div>
           </div>
@@ -820,8 +827,8 @@ export function InicioClient({ initialConsultas, initialSNAs }: InicioClientProp
       if (navigator.share && navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
         // Usar Web Share API para compartir el PDF
         await navigator.share({
-          title: `📋 Informe de Consulta Médica - ${consulta.nombre}`,
-          text: `🏥 Centro CAFF Gestión Integral\n\n📋 INFORME DE CONSULTA MÉDICA\n\n👤 Información del Adolescente:\n• Nombre: ${consulta.nombre}\n• Cédula: ${consulta.cedula}\n\n🏥 Detalles de la Consulta:\n• Estudio: ${consulta.estudio}\n• Educador/a Responsable: ${consulta.educador}\n• Estado: ${consulta.estado}\n\n📅 Fechas Importantes:\n• Fecha de Consulta: ${format(new Date(consulta.fechaConsulta), 'dd/MM/yyyy')}\n• Fecha de Control: ${format(new Date(consulta.fechaControl), 'dd/MM/yyyy')}\n\n📱 Documento generado desde Centro CAFF Gestión Integral\n📄 Sistema de Gestión Integral de Consultas`,
+          title: `Informe de Consulta Médica - ${consulta.nombre}`,
+          text: `Centro CAFF Gestión Integral\n\nINFORME DE CONSULTA MÉDICA\n\nInformación del Adolescente:\n• Nombre: ${consulta.nombre}\n• Cédula: ${consulta.cedula}\n\nDetalles de la Consulta:\n• Estudio: ${consulta.estudio}\n• Educador/a Responsable: ${consulta.educador}\n• Estado: ${consulta.estado}\n\nFechas Importantes:\n• Fecha de Consulta: ${format(new Date(consulta.fechaConsulta), 'dd/MM/yyyy')}\n• Fecha de Control: ${format(new Date(consulta.fechaControl), 'dd/MM/yyyy')}\n\nDocumento generado desde Centro CAFF Gestión Integral\nSistema de Gestión Integral de Consultas`,
           files: [pdfFile]
         });
         
@@ -1023,9 +1030,9 @@ export function InicioClient({ initialConsultas, initialSNAs }: InicioClientProp
         <body>
           <div class="container">
             <div class="header">
-              <h1>🏥 Centro CAFF Gestión Integral</h1>
-              <h2>⚠️ INFORME DE SALIDA NO ACORDADA (SNA)</h2>
-              <p>📅 Documento generado el: ${format(new Date(), 'dd/MM/yyyy')} a las ${format(new Date(), 'HH:mm')} hrs</p>
+              <h1>Centro CAFF Gestión Integral</h1>
+              <h2>INFORME DE SALIDA NO ACORDADA (SNA)</h2>
+              <p>Documento generado el: ${format(new Date(), 'dd/MM/yyyy')} a las ${format(new Date(), 'HH:mm')} hrs</p>
             </div>
             
             <div class="content">
@@ -1098,23 +1105,23 @@ export function InicioClient({ initialConsultas, initialSNAs }: InicioClientProp
                   </svg>
                   COMENTARIOS
                 </div>
-                <div class="comments ${!sna.comentarios ? 'empty' : ''}">${sna.comentarios || '📝 Espacio para comentarios y observaciones:\n\n• Circunstancias del incidente:\n• Acciones tomadas:\n• Medidas preventivas:\n• Seguimiento requerido:\n• Observaciones adicionales:'}</div>
+                <div class="comments ${!sna.comentarios ? 'empty' : ''}">${sna.comentarios || 'Espacio para comentarios y observaciones:\n\n• Circunstancias del incidente:\n• Acciones tomadas:\n• Medidas preventivas:\n• Seguimiento requerido:\n• Observaciones adicionales:'}</div>
               </div>
               ` : ''}
             </div>
             
             <div class="footer">
               <div class="footer-left">
-                <p>🏥 Centro CAFF Gestión Integral</p>
+                <p>Centro CAFF Gestión Integral</p>
                 <p>Sistema de Gestión Integral</p>
               </div>
               <div class="footer-center">
-                <p>⚠️ Documento Oficial</p>
+                <p>Documento Oficial</p>
                 <p>SNA - ${sna.nombreAdolescente}</p>
               </div>
               <div class="footer-right">
-                <p>📅 ${format(new Date(), 'dd/MM/yyyy')}</p>
-                <p>⏰ ${format(new Date(), 'HH:mm')} hrs</p>
+                <p>${format(new Date(), 'dd/MM/yyyy')}</p>
+                <p>${format(new Date(), 'HH:mm')} hrs</p>
               </div>
             </div>
           </div>
@@ -1158,8 +1165,8 @@ export function InicioClient({ initialConsultas, initialSNAs }: InicioClientProp
       if (navigator.share && navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
         // Usar Web Share API para compartir el PDF
         await navigator.share({
-          title: `⚠️ Informe de SNA - ${sna.nombreAdolescente}`,
-          text: `🏥 Centro CAFF Gestión Integral\n\n⚠️ INFORME DE SALIDA NO ACORDADA (SNA)\n\n👤 Información del Adolescente:\n• Nombre: ${sna.nombreAdolescente}\n• N° Denuncia: ${sna.numeroDenuncia}\n\n⚠️ Detalles del Incidente:\n• Estado: ${sna.estado}\n• Constatación de Lesiones: ${sna.constatacionLesiones ? 'Sí' : 'No'}\n${sna.retira ? `• Retira: ${sna.retira}\n` : ''}\n📅 Fechas Importantes:\n• Fecha de Denuncia: ${format(new Date(sna.fechaDenuncia), 'dd/MM/yyyy')}\n${sna.fechaCierre ? `• Fecha de Cierre: ${format(new Date(sna.fechaCierre), 'dd/MM/yyyy')}\n` : ''}\n📱 Documento generado desde Centro CAFF Gestión Integral\n📄 Sistema de Gestión Integral de SNAs`,
+          title: `Informe de SNA - ${sna.nombreAdolescente}`,
+          text: `Centro CAFF Gestión Integral\n\nINFORME DE SALIDA NO ACORDADA (SNA)\n\nInformación del Adolescente:\n• Nombre: ${sna.nombreAdolescente}\n• N° Denuncia: ${sna.numeroDenuncia}\n\nDetalles del Incidente:\n• Estado: ${sna.estado}\n• Constatación de Lesiones: ${sna.constatacionLesiones ? 'Sí' : 'No'}\n${sna.retira ? `• Retira: ${sna.retira}\n` : ''}\nFechas Importantes:\n• Fecha de Denuncia: ${format(new Date(sna.fechaDenuncia), 'dd/MM/yyyy')}\n${sna.fechaCierre ? `• Fecha de Cierre: ${format(new Date(sna.fechaCierre), 'dd/MM/yyyy')}\n` : ''}\nDocumento generado desde Centro CAFF Gestión Integral\nSistema de Gestión Integral de SNAs`,
           files: [pdfFile]
         });
         

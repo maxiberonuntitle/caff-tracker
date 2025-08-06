@@ -509,7 +509,7 @@ export function ConsultaForm({ isOpen, setIsOpen, onSubmit, onDelete, onShare, o
                   </FormLabel>
                       <FormControl>
                           <Input 
-                            placeholder="Ej: Dr. Ana Rodriguez" 
+                            placeholder="Ej: Ana Rodriguez" 
                             {...field} 
                             className="bg-white/90 border-gray-200 focus:border-gray-400 focus:ring-gray-400 placeholder:text-gray-400 h-9"
                           />

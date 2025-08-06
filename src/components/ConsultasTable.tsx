@@ -291,9 +291,32 @@ export function ConsultasTable({ consultas, onEdit, onDelete, onSharePDF, onDown
         <body>
           <div class="container">
             <div class="header">
-              <h1>🏥 Centro CAFF Gestión Integral</h1>
-              <h2>📋 INFORME DE CONSULTA MÉDICA</h2>
-              <p>📅 Documento generado el: ${format(new Date(), 'dd/MM/yyyy')} a las ${format(new Date(), 'HH:mm')} hrs</p>
+              <h1>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline-block; margin-right: 8px; vertical-align: middle;">
+                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                </svg>
+                Centro CAFF Gestión Integral
+              </h1>
+              <h2>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline-block; margin-right: 8px; vertical-align: middle;">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14,2 14,8 20,8"></polyline>
+                  <line x1="16" y1="13" x2="8" y2="13"></line>
+                  <line x1="16" y1="17" x2="8" y2="17"></line>
+                  <polyline points="10,9 9,9 8,9"></polyline>
+                </svg>
+                INFORME DE CONSULTA MÉDICA
+              </h2>
+              <p>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline-block; margin-right: 6px; vertical-align: middle;">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                  <line x1="16" y1="2" x2="16" y2="6"></line>
+                  <line x1="8" y1="2" x2="8" y2="6"></line>
+                  <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
+                Documento generado el: ${format(new Date(), 'dd/MM/yyyy')} a las ${format(new Date(), 'HH:mm')} hrs
+              </p>
             </div>
             
             <div class="content">
@@ -361,22 +384,51 @@ export function ConsultasTable({ consultas, onEdit, onDelete, onSharePDF, onDown
                   </svg>
                   OBSERVACIONES MÉDICAS
                 </div>
-                <div class="observations ${!consulta.observaciones ? 'empty' : ''}">${consulta.observaciones || '📝 Espacio para observaciones médicas:\n\n• Evaluación realizada:\n• Diagnóstico:\n• Tratamiento indicado:\n• Recomendaciones:\n• Seguimiento requerido:'}</div>
+                <div class="observations ${!consulta.observaciones ? 'empty' : ''}">${consulta.observaciones || 'Espacio para observaciones médicas:\n\n• Evaluación realizada:\n• Diagnóstico:\n• Tratamiento indicado:\n• Recomendaciones:\n• Seguimiento requerido:'}</div>
               </div>
             </div>
             
             <div class="footer">
               <div class="footer-left">
-                <p>🏥 Centro CAFF Gestión Integral</p>
+                <p>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline-block; margin-right: 6px; vertical-align: middle;">
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                  </svg>
+                  Centro CAFF Gestión Integral
+                </p>
                 <p>Sistema de Gestión Integral</p>
               </div>
               <div class="footer-center">
-                <p>📋 Documento Oficial</p>
+                <p>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline-block; margin-right: 6px; vertical-align: middle;">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14,2 14,8 20,8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10,9 9,9 8,9"></polyline>
+                  </svg>
+                  Documento Oficial
+                </p>
                 <p>Consulta Médica - ${consulta.nombre}</p>
               </div>
               <div class="footer-right">
-                <p>📅 ${format(new Date(), 'dd/MM/yyyy')}</p>
-                <p>⏰ ${format(new Date(), 'HH:mm')} hrs</p>
+                <p>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline-block; margin-right: 6px; vertical-align: middle;">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                  </svg>
+                  ${format(new Date(), 'dd/MM/yyyy')}
+                </p>
+                <p>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline-block; margin-right: 6px; vertical-align: middle;">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12,6 12,12 16,14"></polyline>
+                  </svg>
+                  ${format(new Date(), 'HH:mm')} hrs
+                </p>
               </div>
             </div>
           </div>
@@ -592,9 +644,15 @@ export function ConsultasTable({ consultas, onEdit, onDelete, onSharePDF, onDown
         <body>
           <div class="container">
             <div class="header">
-              <h1>🏥 Centro CAFF Gestión Integral</h1>
-              <h2>📋 INFORME DE CONSULTA MÉDICA</h2>
-              <p>📅 Documento generado el: ${format(new Date(), 'dd/MM/yyyy')} a las ${format(new Date(), 'HH:mm')} hrs</p>
+              <h1>
+                Centro CAFF Gestión Integral
+              </h1>
+              <h2>
+                INFORME DE CONSULTA MÉDICA
+              </h2>
+              <p>
+                Documento generado el: ${format(new Date(), 'dd/MM/yyyy')} a las ${format(new Date(), 'HH:mm')} hrs
+              </p>
             </div>
             
             <div class="content">
@@ -662,21 +720,50 @@ export function ConsultasTable({ consultas, onEdit, onDelete, onSharePDF, onDown
                   </svg>
                   OBSERVACIONES MÉDICAS
                 </div>
-                <div class="observations ${!consulta.observaciones ? 'empty' : ''}">${consulta.observaciones || '📝 Espacio para observaciones médicas:\n\n• Evaluación realizada:\n• Diagnóstico:\n• Tratamiento indicado:\n• Recomendaciones:\n• Seguimiento requerido:'}</div>
+                <div class="observations ${!consulta.observaciones ? 'empty' : ''}">${consulta.observaciones || 'Espacio para observaciones médicas:\n\n• Evaluación realizada:\n• Diagnóstico:\n• Tratamiento indicado:\n• Recomendaciones:\n• Seguimiento requerido:'}</div>
               </div>
             </div>
             
             <div class="footer">
               <div class="footer-left">
-                <p>🏥 Centro CAFF Gestión Integral</p>
+                <p>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline-block; margin-right: 6px; vertical-align: middle;">
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                  </svg>
+                  Centro CAFF Gestión Integral
+                </p>
                 <p>Sistema de Gestión Integral</p>
               </div>
               <div class="footer-center">
-                <p>📋 Consulta Médica - ${consulta.nombre}</p>
+                <p>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline-block; margin-right: 6px; vertical-align: middle;">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14,2 14,8 20,8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10,9 9,9 8,9"></polyline>
+                  </svg>
+                  Consulta Médica - ${consulta.nombre}
+                </p>
               </div>
               <div class="footer-right">
-                <p>📅 ${format(new Date(), 'dd/MM/yyyy')}</p>
-                <p>⏰ ${format(new Date(), 'HH:mm')} hrs</p>
+                <p>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline-block; margin-right: 6px; vertical-align: middle;">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                  </svg>
+                  ${format(new Date(), 'dd/MM/yyyy')}
+                </p>
+                <p>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline-block; margin-right: 6px; vertical-align: middle;">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12,6 12,12 16,14"></polyline>
+                  </svg>
+                  ${format(new Date(), 'HH:mm')} hrs
+                </p>
               </div>
             </div>
           </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -55,9 +55,16 @@ export function SNACalendar({
   onSharePDF, 
   onDownloadPDF 
 }: SNACalendarProps) {
-  const [selectedDay, setSelectedDay] = useState<Date | undefined>(new Date());
+  const [selectedDay, setSelectedDay] = useState<Date | undefined>(undefined);
   const [selectedSNA, setSelectedSNA] = useState<SNA | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
+
+  // Inicializar fecha en el cliente para evitar problemas de hidratación
+  useEffect(() => {
+    if (!selectedDay) {
+      setSelectedDay(new Date());
+    }
+  }, [selectedDay]);
 
   // Agrupar SNAs por fecha
   const snasPorFecha = useMemo(() => {

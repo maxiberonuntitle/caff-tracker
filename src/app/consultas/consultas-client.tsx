@@ -56,10 +56,7 @@ export function ConsultasClient({ initialConsultas }: ConsultasClientProps) {
   const itemsPerPage = 20;
 
   // Filter states
-  const [statusFilter, setStatusFilter] = useState<string>(() => {
-    const statusFromUrl = searchParams.get('status');
-    return statusFromUrl || 'todos';
-  });
+  const [statusFilter, setStatusFilter] = useState<string>('todos');
   const [studyFilter, setStudyFilter] = useState<string>('todos');
   const [dateFilter, setDateFilter] = useState<DateRange | undefined>(undefined);
   const [educatorFilter, setEducatorFilter] = useState('');
@@ -85,8 +82,15 @@ export function ConsultasClient({ initialConsultas }: ConsultasClientProps) {
     return parts.length > 0 ? parts.join(', ') : 'Búsqueda rápida por adolescente';
   }, [patientFilter, educatorFilter, statusFilter, studyFilter, dateFilter]);
 
-  // Manejar parámetro edit de la URL
+  // Manejar parámetros de la URL
   useEffect(() => {
+    // Manejar parámetro status de la URL
+    const statusFromUrl = searchParams.get('status');
+    if (statusFromUrl) {
+      setStatusFilter(statusFromUrl);
+    }
+
+    // Manejar parámetro edit de la URL
     const editId = searchParams.get('edit');
     if (editId) {
       console.log('Edit ID from URL:', editId);
@@ -546,7 +550,7 @@ export function ConsultasClient({ initialConsultas }: ConsultasClientProps) {
         // Usar Web Share API para compartir el PDF
         await navigator.share({
           title: `Consulta Médica - ${consulta.nombre}`,
-          text: `🏥 Centro CAFF Gestión Integral\n\nConsulta médica de ${consulta.nombre}\n\n📋 Información:\n• Adolescente: ${consulta.nombre}\n• Cédula: ${consulta.cedula}\n• Estudio: ${consulta.estudio}\n• Educador/a: ${consulta.educador}\n• Estado: ${consulta.estado}\n\n📅 Fecha Consulta: ${format(new Date(consulta.fechaConsulta), 'dd/MM/yyyy')}\n⏰ Fecha Control: ${format(new Date(consulta.fechaControl), 'dd/MM/yyyy')}\n\n📱 Compartido desde Centro CAFF Gestión Integral`,
+          text: `Centro CAFF Gestión Integral\n\nConsulta médica de ${consulta.nombre}\n\nInformación:\n• Adolescente: ${consulta.nombre}\n• Cédula: ${consulta.cedula}\n• Estudio: ${consulta.estudio}\n• Educador/a: ${consulta.educador}\n• Estado: ${consulta.estado}\n\nFecha Consulta: ${format(new Date(consulta.fechaConsulta), 'dd/MM/yyyy')}\nFecha Control: ${format(new Date(consulta.fechaControl), 'dd/MM/yyyy')}\n\nCompartido desde Centro CAFF Gestión Integral`,
           files: [pdfFile]
         });
         
@@ -748,9 +752,9 @@ export function ConsultasClient({ initialConsultas }: ConsultasClientProps) {
         <body>
           <div class="container">
             <div class="header">
-              <h1>🏥 Centro CAFF Gestión Integral</h1>
-              <h2>📋 INFORME DE CONSULTA MÉDICA</h2>
-              <p>📅 Documento generado el: ${format(new Date(), 'dd/MM/yyyy')} a las ${format(new Date(), 'HH:mm')} hrs</p>
+              <h1>Centro CAFF Gestión Integral</h1>
+              <h2>INFORME DE CONSULTA MÉDICA</h2>
+              <p>Documento generado el: ${format(new Date(), 'dd/MM/yyyy')} a las ${format(new Date(), 'HH:mm')} hrs</p>
             </div>
             
             <div class="content">
@@ -818,22 +822,21 @@ export function ConsultasClient({ initialConsultas }: ConsultasClientProps) {
                   </svg>
                   OBSERVACIONES MÉDICAS
                 </div>
-                <div class="observations ${!consulta.observaciones ? 'empty' : ''}">${consulta.observaciones || '📝 Espacio para observaciones médicas:\n\n• Evaluación realizada:\n• Diagnóstico:\n• Tratamiento indicado:\n• Recomendaciones:\n• Seguimiento requerido:'}</div>
+                <div class="observations ${!consulta.observaciones ? 'empty' : ''}">${consulta.observaciones || 'Espacio para observaciones médicas:\n\n• Evaluación realizada:\n• Diagnóstico:\n• Tratamiento indicado:\n• Recomendaciones:\n• Seguimiento requerido:'}</div>
               </div>
             </div>
             
             <div class="footer">
               <div class="footer-left">
-                <p>🏥 Centro CAFF Gestión Integral</p>
+                <p>Centro CAFF Gestión Integral</p>
                 <p>Sistema de Gestión Integral</p>
               </div>
               <div class="footer-center">
-                <p>📋 Documento Oficial</p>
                 <p>Consulta Médica - ${consulta.nombre}</p>
               </div>
               <div class="footer-right">
-                <p>📅 ${format(new Date(), 'dd/MM/yyyy')}</p>
-                <p>⏰ ${format(new Date(), 'HH:mm')} hrs</p>
+                <p>${format(new Date(), 'dd/MM/yyyy')}</p>
+                <p>${format(new Date(), 'HH:mm')} hrs</p>
               </div>
             </div>
           </div>
@@ -1415,7 +1418,7 @@ export function ConsultasClient({ initialConsultas }: ConsultasClientProps) {
         // Usar Web Share API para compartir el PDF
         await navigator.share({
           title: 'Reporte de Consultas - Centro CAFF Gestión Integral',
-          text: `🏥 Centro CAFF Gestión Integral\n\nReporte de consultas médicas\n\n📊 Total de consultas: ${filteredConsultas.length}\n📅 Fecha de generación: ${format(new Date(), 'dd/MM/yyyy HH:mm')}\n\n📱 Compartido desde Centro CAFF Gestión Integral`,
+          text: `Centro CAFF Gestión Integral\n\nReporte de consultas médicas\n\nTotal de consultas: ${filteredConsultas.length}\nFecha de generación: ${format(new Date(), 'dd/MM/yyyy HH:mm')}\n\nCompartido desde Centro CAFF Gestión Integral`,
           files: [pdfFile]
         });
         
@@ -1456,7 +1459,7 @@ export function ConsultasClient({ initialConsultas }: ConsultasClientProps) {
     }
   }
 
-  const descriptionId = useMemo(() => `alert-desc-${Math.random()}`, []);
+  const descriptionId = useMemo(() => `alert-desc-${Date.now()}`, []);
 
 
   return (

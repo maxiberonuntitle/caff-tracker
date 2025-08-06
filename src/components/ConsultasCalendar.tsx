@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -41,10 +41,20 @@ export function ConsultasCalendar({
   onSharePDF,
   onDownloadPDF 
 }: ConsultasCalendarProps) {
-  const [date, setDate] = useState<Date | undefined>(new Date());
-  const [selectedDay, setSelectedDay] = useState<Date | undefined>(new Date());
+  const [date, setDate] = useState<Date | undefined>(undefined);
+  const [selectedDay, setSelectedDay] = useState<Date | undefined>(undefined);
   const [selectedConsulta, setSelectedConsulta] = useState<Consulta | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
+
+  // Inicializar fechas en el cliente para evitar problemas de hidratación
+  useEffect(() => {
+    if (!date) {
+      setDate(new Date());
+    }
+    if (!selectedDay) {
+      setSelectedDay(new Date());
+    }
+  }, [date, selectedDay]);
 
   // Agrupar consultas por fecha
   const consultasPorFecha = consultas.reduce((acc, consulta) => {
@@ -302,9 +312,9 @@ export function ConsultasCalendar({
         <body>
           <div class="container">
             <div class="header">
-              <h1>🏥 Centro CAFF Gestión Integral</h1>
-              <h2>📋 INFORME DE CONSULTA MÉDICA</h2>
-              <p>📅 Documento generado el: ${format(new Date(), 'dd/MM/yyyy')} a las ${format(new Date(), 'HH:mm')} hrs</p>
+              <h1>Centro CAFF Gestión Integral</h1>
+              <h2>INFORME DE CONSULTA MÉDICA</h2>
+              <p>Documento generado el: ${format(new Date(), 'dd/MM/yyyy')} a las ${format(new Date(), 'HH:mm')} hrs</p>
             </div>
             
             <div class="content">
@@ -372,21 +382,21 @@ export function ConsultasCalendar({
                   </svg>
                   OBSERVACIONES MÉDICAS
                 </div>
-                <div class="observations ${!consulta.observaciones ? 'empty' : ''}">${consulta.observaciones || '📝 Espacio para observaciones médicas:\n\n• Evaluación realizada:\n• Diagnóstico:\n• Tratamiento indicado:\n• Recomendaciones:\n• Seguimiento requerido:'}</div>
+                <div class="observations ${!consulta.observaciones ? 'empty' : ''}">${consulta.observaciones || 'Espacio para observaciones médicas:\n\n• Evaluación realizada:\n• Diagnóstico:\n• Tratamiento indicado:\n• Recomendaciones:\n• Seguimiento requerido:'}</div>
               </div>
             </div>
             
             <div class="footer">
               <div class="footer-left">
-                <p>🏥 Centro CAFF Gestión Integral</p>
+                <p>Centro CAFF Gestión Integral</p>
                 <p>Sistema de Gestión Integral</p>
               </div>
               <div class="footer-center">
-                <p>📋 Consulta Médica - ${consulta.nombre}</p>
+                <p>Consulta Médica - ${consulta.nombre}</p>
               </div>
               <div class="footer-right">
-                <p>📅 ${format(new Date(), 'dd/MM/yyyy')}</p>
-                <p>⏰ ${format(new Date(), 'HH:mm')} hrs</p>
+                <p>${format(new Date(), 'dd/MM/yyyy')}</p>
+                <p>${format(new Date(), 'HH:mm')} hrs</p>
               </div>
             </div>
           </div>
@@ -430,7 +440,7 @@ export function ConsultasCalendar({
         // Usar Web Share API para compartir el PDF
         await navigator.share({
           title: `Consulta Médica - ${consulta.nombre}`,
-          text: `🏥 CAFF CONSULTAS MÉDICAS\n\nConsulta médica de ${consulta.nombre}\n\n📋 Información:\n• Adolescente: ${consulta.nombre}\n• Cédula: ${consulta.cedula}\n• Estudio: ${consulta.estudio}\n• Educador/a: ${consulta.educador}\n• Estado: ${consulta.estado}\n\n📅 Fecha Consulta: ${format(new Date(consulta.fechaConsulta), 'dd/MM/yyyy')}\n⏰ Fecha Control: ${format(new Date(consulta.fechaControl), 'dd/MM/yyyy')}\n\n📱 Compartido desde CAFF Consultas Médicas`,
+          text: `CAFF CONSULTAS MÉDICAS\n\nConsulta médica de ${consulta.nombre}\n\nInformación:\n• Adolescente: ${consulta.nombre}\n• Cédula: ${consulta.cedula}\n• Estudio: ${consulta.estudio}\n• Educador/a: ${consulta.educador}\n• Estado: ${consulta.estado}\n\nFecha Consulta: ${format(new Date(consulta.fechaConsulta), 'dd/MM/yyyy')}\nFecha Control: ${format(new Date(consulta.fechaControl), 'dd/MM/yyyy')}\n\nCompartido desde CAFF Consultas Médicas`,
           files: [pdfFile]
         });
       } else {
@@ -632,9 +642,9 @@ export function ConsultasCalendar({
         <body>
           <div class="container">
             <div class="header">
-              <h1>🏥 Centro CAFF Gestión Integral</h1>
-              <h2>📋 INFORME DE CONSULTA MÉDICA</h2>
-              <p>📅 Documento generado el: ${format(new Date(), 'dd/MM/yyyy')} a las ${format(new Date(), 'HH:mm')} hrs</p>
+              <h1>Centro CAFF Gestión Integral</h1>
+              <h2>INFORME DE CONSULTA MÉDICA</h2>
+              <p>Documento generado el: ${format(new Date(), 'dd/MM/yyyy')} a las ${format(new Date(), 'HH:mm')} hrs</p>
             </div>
             
             <div class="content">
@@ -702,21 +712,21 @@ export function ConsultasCalendar({
                   </svg>
                   OBSERVACIONES MÉDICAS
                 </div>
-                <div class="observations ${!consulta.observaciones ? 'empty' : ''}">${consulta.observaciones || '📝 Espacio para observaciones médicas:\n\n• Evaluación realizada:\n• Diagnóstico:\n• Tratamiento indicado:\n• Recomendaciones:\n• Seguimiento requerido:'}</div>
+                <div class="observations ${!consulta.observaciones ? 'empty' : ''}">${consulta.observaciones || 'Espacio para observaciones médicas:\n\n• Evaluación realizada:\n• Diagnóstico:\n• Tratamiento indicado:\n• Recomendaciones:\n• Seguimiento requerido:'}</div>
               </div>
             </div>
             
             <div class="footer">
               <div class="footer-left">
-                <p>🏥 Centro CAFF Gestión Integral</p>
+                <p>Centro CAFF Gestión Integral</p>
                 <p>Sistema de Gestión Integral</p>
               </div>
               <div class="footer-center">
-                <p>📋 Consulta Médica - ${consulta.nombre}</p>
+                <p>Consulta Médica - ${consulta.nombre}</p>
               </div>
               <div class="footer-right">
-                <p>📅 ${format(new Date(), 'dd/MM/yyyy')}</p>
-                <p>⏰ ${format(new Date(), 'HH:mm')} hrs</p>
+                <p>${format(new Date(), 'dd/MM/yyyy')}</p>
+                <p>${format(new Date(), 'HH:mm')} hrs</p>
               </div>
             </div>
           </div>

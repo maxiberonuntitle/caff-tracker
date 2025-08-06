@@ -55,14 +55,8 @@ export function SNAClient({ initialSNAs }: SNAClientProps) {
   const itemsPerPage = 20;
 
   // Filter states
-  const [statusFilter, setStatusFilter] = useState<string>(() => {
-    const statusFromUrl = searchParams.get('status');
-    return statusFromUrl || 'todos';
-  });
-  const [lesionesFilter, setLesionesFilter] = useState<string>(() => {
-    const lesionesFromUrl = searchParams.get('lesiones');
-    return lesionesFromUrl || 'todos';
-  });
+  const [statusFilter, setStatusFilter] = useState<string>('todos');
+  const [lesionesFilter, setLesionesFilter] = useState<string>('todos');
   const [dateFilter, setDateFilter] = useState<DateRange | undefined>(undefined);
   const [retiraFilter, setRetiraFilter] = useState('');
   const [adolescenteFilter, setAdolescenteFilter] = useState('');
@@ -86,8 +80,21 @@ export function SNAClient({ initialSNAs }: SNAClientProps) {
     return parts.length > 0 ? parts.join(', ') : 'Búsqueda rápida por adolescente';
   }, [adolescenteFilter, retiraFilter, statusFilter, lesionesFilter, dateFilter]);
 
-  // Manejar parámetro edit de la URL
+  // Manejar parámetros de la URL
   useEffect(() => {
+    // Manejar parámetro status de la URL
+    const statusFromUrl = searchParams.get('status');
+    if (statusFromUrl) {
+      setStatusFilter(statusFromUrl);
+    }
+
+    // Manejar parámetro lesiones de la URL
+    const lesionesFromUrl = searchParams.get('lesiones');
+    if (lesionesFromUrl) {
+      setLesionesFilter(lesionesFromUrl);
+    }
+
+    // Manejar parámetro edit de la URL
     const editId = searchParams.get('edit');
     if (editId) {
       console.log('Edit ID from URL:', editId);
@@ -604,7 +611,7 @@ export function SNAClient({ initialSNAs }: SNAClientProps) {
         // Usar Web Share API para compartir el PDF
         await navigator.share({
           title: `SNA - ${sna.nombreAdolescente}`,
-          text: `🏥 Centro CAFF Gestión Integral\n\nSalida No Acordada (SNA) de ${sna.nombreAdolescente}\n\n📋 Información:\n• Adolescente: ${sna.nombreAdolescente}\n• N° Denuncia: ${sna.numeroDenuncia}\n• Estado: ${sna.estado}\n• Constatación de lesiones: ${sna.constatacionLesiones ? 'Sí' : 'No'}\n\n📅 Fecha Denuncia: ${format(new Date(sna.fechaDenuncia), 'dd/MM/yyyy')}\n${sna.fechaCierre ? `📅 Fecha Cierre: ${format(new Date(sna.fechaCierre), 'dd/MM/yyyy')}\n` : ''}${sna.retira ? `👨‍⚕️ Retira: ${sna.retira}\n` : ''}\n📱 Compartido desde Centro CAFF Gestión Integral`,
+          text: `Centro CAFF Gestión Integral\n\nSalida No Acordada (SNA) de ${sna.nombreAdolescente}\n\nInformación:\n• Adolescente: ${sna.nombreAdolescente}\n• N° Denuncia: ${sna.numeroDenuncia}\n• Estado: ${sna.estado}\n• Constatación de lesiones: ${sna.constatacionLesiones ? 'Sí' : 'No'}\n\nFecha Denuncia: ${format(new Date(sna.fechaDenuncia), 'dd/MM/yyyy')}\n${sna.fechaCierre ? `Fecha Cierre: ${format(new Date(sna.fechaCierre), 'dd/MM/yyyy')}\n` : ''}${sna.retira ? `Retira: ${sna.retira}\n` : ''}\nCompartido desde Centro CAFF Gestión Integral`,
           files: [pdfFile]
         });
       } else {
@@ -1589,7 +1596,7 @@ export function SNAClient({ initialSNAs }: SNAClientProps) {
     }
   };
 
-  const descriptionId = useMemo(() => `alert-desc-${Math.random()}`, []);
+  const descriptionId = useMemo(() => `alert-desc-${Date.now()}`, []);
 
   return (
     <>
