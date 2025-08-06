@@ -419,7 +419,7 @@ export function ConsultasClient({ initialConsultas }: ConsultasClientProps) {
         <body>
           <div class="container">
             <div class="header">
-              <h1>CAFF CONSULTAS MÉDICAS</h1>
+              <h1>Centro CAFF Gestión Integral</h1>
               <h2>CONSULTA MÉDICA</h2>
               <p>Fecha de generación: ${format(new Date(), 'dd/MM/yyyy HH:mm')}</p>
             </div>
@@ -495,7 +495,7 @@ export function ConsultasClient({ initialConsultas }: ConsultasClientProps) {
             
             <div class="footer">
               <div class="footer-left">
-                <p>CAFF Consultas Médicas - Gestión de consultas</p>
+                <p>Centro CAFF Gestión Integral - Gestión de consultas</p>
               </div>
               <div class="footer-center">
                 <p>Sistema de Gestión de Consultas Médicas</p>
@@ -546,7 +546,7 @@ export function ConsultasClient({ initialConsultas }: ConsultasClientProps) {
         // Usar Web Share API para compartir el PDF
         await navigator.share({
           title: `Consulta Médica - ${consulta.nombre}`,
-          text: `🏥 CAFF CONSULTAS MÉDICAS\n\nConsulta médica de ${consulta.nombre}\n\n📋 Información:\n• Adolescente: ${consulta.nombre}\n• Cédula: ${consulta.cedula}\n• Estudio: ${consulta.estudio}\n• Educador/a: ${consulta.educador}\n• Estado: ${consulta.estado}\n\n📅 Fecha Consulta: ${format(new Date(consulta.fechaConsulta), 'dd/MM/yyyy')}\n⏰ Fecha Control: ${format(new Date(consulta.fechaControl), 'dd/MM/yyyy')}\n\n📱 Compartido desde CAFF Consultas Médicas`,
+          text: `🏥 Centro CAFF Gestión Integral\n\nConsulta médica de ${consulta.nombre}\n\n📋 Información:\n• Adolescente: ${consulta.nombre}\n• Cédula: ${consulta.cedula}\n• Estudio: ${consulta.estudio}\n• Educador/a: ${consulta.educador}\n• Estado: ${consulta.estado}\n\n📅 Fecha Consulta: ${format(new Date(consulta.fechaConsulta), 'dd/MM/yyyy')}\n⏰ Fecha Control: ${format(new Date(consulta.fechaControl), 'dd/MM/yyyy')}\n\n📱 Compartido desde Centro CAFF Gestión Integral`,
           files: [pdfFile]
         });
         
@@ -591,7 +591,7 @@ export function ConsultasClient({ initialConsultas }: ConsultasClientProps) {
     // Importar html2pdf dinámicamente
     const html2pdf = (await import('html2pdf.js')).default;
     
-    // Crear el contenido HTML del PDF con diseño optimizado para impresión
+    // Crear el contenido HTML del PDF con diseño profesional mejorado
     const htmlContent = `
       <!DOCTYPE html>
       <html>
@@ -619,11 +619,11 @@ export function ConsultasClient({ initialConsultas }: ConsultasClientProps) {
             }
             
             .header { 
-              background: #f8fafc;
+              background: #eff6ff;
               color: #1f2937;
               padding: 20px 30px;
               text-align: center;
-              border-bottom: 2px solid #e5e7eb;
+              border-bottom: 2px solid #bfdbfe;
             }
             
             .header h1 { 
@@ -690,136 +690,151 @@ export function ConsultasClient({ initialConsultas }: ConsultasClientProps) {
               text-align: right;
             }
             
-            .observations {
-              background: #f9fafb;
+            .observations { 
               padding: 16px;
+              border: 2px solid #bfdbfe;
               border-radius: 8px;
-              border-left: 4px solid #3b82f6;
               font-size: 13px;
               line-height: 1.6;
+              min-height: 120px;
+              background: white;
               white-space: pre-wrap;
+              word-wrap: break-word;
             }
             
             .observations.empty {
-              background: #fef3c7;
-              border-left-color: #f59e0b;
-              color: #92400e;
+              color: #9ca3af;
               font-style: italic;
+              border-style: dashed;
             }
             
             .status-badge {
-              padding: 4px 8px;
+              display: inline-block;
+              padding: 3px 8px;
               border-radius: 12px;
-              font-size: 11px;
+              font-size: 10px;
               font-weight: 600;
               text-transform: uppercase;
-              letter-spacing: 0.5px;
+              letter-spacing: 0.05em;
             }
             
-            .status-agendada {
-              background: #dbeafe;
-              color: #1e40af;
-            }
+            .status-agendada { background: #dbeafe; color: #1e40af; }
+            .status-pendiente { background: #fef3c7; color: #d97706; }
+            .status-completa { background: #d1fae5; color: #047857; }
             
-            .status-pendiente {
-              background: #fef3c7;
-              color: #92400e;
-            }
-            
-            .status-completa {
-              background: #d1fae5;
-              color: #065f46;
-            }
-            
-            .footer {
-              background: #f8fafc;
-              padding: 20px 30px;
-              border-top: 2px solid #e5e7eb;
-              display: flex;
-              justify-content: space-between;
-              align-items: center;
+            .footer { 
+              background: #f9fafb;
+              padding: 16px 30px;
+              text-align: center;
               font-size: 11px;
               color: #6b7280;
+              border-top: 1px solid #e5e7eb;
             }
             
-            .footer-left, .footer-center, .footer-right {
-              flex: 1;
+            .footer p {
+              margin-bottom: 2px;
             }
             
-            .footer-center {
-              text-align: center;
-            }
-            
-            .footer-right {
-              text-align: right;
+            .footer p:last-child {
+              margin-bottom: 0;
             }
             
             @media print {
-              body { margin: 0; }
-              .container { max-width: none; }
+              body { background: white; }
+              .container { box-shadow: none; }
             }
           </style>
         </head>
         <body>
           <div class="container">
             <div class="header">
-              <h1>CAFF CONSULTAS MÉDICAS</h1>
-              <h2>CONSULTA MÉDICA</h2>
-              <p>Fecha de generación: ${format(new Date(), 'dd/MM/yyyy HH:mm')}</p>
+              <h1>🏥 Centro CAFF Gestión Integral</h1>
+              <h2>📋 INFORME DE CONSULTA MÉDICA</h2>
+              <p>📅 Documento generado el: ${format(new Date(), 'dd/MM/yyyy')} a las ${format(new Date(), 'HH:mm')} hrs</p>
             </div>
+            
             <div class="content">
               <div class="section">
-                <div class="section-title">📋 INFORMACIÓN DEL PACIENTE</div>
+                <div class="section-title">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                  </svg>
+                  INFORMACIÓN DEL ADOLESCENTE
+                </div>
                 <div class="field">
-                  <span class="label">👤 Nombre:</span>
+                  <span class="label">Nombre</span>
                   <span class="value">${consulta.nombre}</span>
                 </div>
                 <div class="field">
-                  <span class="label">🆔 Cédula:</span>
+                  <span class="label">Cédula</span>
                   <span class="value">${consulta.cedula}</span>
                 </div>
               </div>
+              
               <div class="section">
-                <div class="section-title">🔬 DETALLES DE LA CONSULTA</div>
+                <div class="section-title">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 12l2 2 4-4"></path>
+                    <path d="M21 12c-1 0-2-1-2-2s1-2 2-2 2 1 2 2-1 2-2 2z"></path>
+                    <path d="M3 12c1 0 2-1 2-2s-1-2-2-2-2 1-2 2 1 2 2 2z"></path>
+                    <path d="M12 3c0 1-1 2-2 2s-2-1-2-2 1-2 2-2 2 1 2 2z"></path>
+                    <path d="M12 21c0-1 1-2 2-2s2 1 2 2-1 2-2 2-2-1-2-2z"></path>
+                  </svg>
+                  DETALLES DE LA CONSULTA
+                </div>
                 <div class="field">
-                  <span class="label">📊 Estudio:</span>
+                  <span class="label">Estudio</span>
                   <span class="value">${consulta.estudio}</span>
                 </div>
                 <div class="field">
-                  <span class="label">👨‍⚕️ Educador/a:</span>
+                  <span class="label">Educador/a</span>
                   <span class="value">${consulta.educador}</span>
                 </div>
                 <div class="field">
-                  <span class="label">📅 Fecha Consulta:</span>
+                  <span class="label">Fecha Consulta</span>
                   <span class="value">${format(new Date(consulta.fechaConsulta), 'dd/MM/yyyy')}</span>
                 </div>
                 <div class="field">
-                  <span class="label">⏰ Fecha Control:</span>
+                  <span class="label">Fecha Control</span>
                   <span class="value">${format(new Date(consulta.fechaControl), 'dd/MM/yyyy')}</span>
                 </div>
                 <div class="field">
-                  <span class="label">📈 Estado:</span>
+                  <span class="label">Estado</span>
                   <span class="value">
                     <span class="status-badge status-${consulta.estado.toLowerCase()}">${consulta.estado}</span>
                   </span>
                 </div>
               </div>
-              ${consulta.observaciones ? `
+              
               <div class="section">
-                <div class="section-title">📝 OBSERVACIONES</div>
-                <div class="observations">${consulta.observaciones}</div>
+                <div class="section-title">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14,2 14,8 20,8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10,9 9,9 8,9"></polyline>
+                  </svg>
+                  OBSERVACIONES MÉDICAS
+                </div>
+                <div class="observations ${!consulta.observaciones ? 'empty' : ''}">${consulta.observaciones || '📝 Espacio para observaciones médicas:\n\n• Evaluación realizada:\n• Diagnóstico:\n• Tratamiento indicado:\n• Recomendaciones:\n• Seguimiento requerido:'}</div>
               </div>
-              ` : `
-              <div class="section">
-                <div class="section-title">📝 OBSERVACIONES</div>
-                <div class="observations empty">Sin observaciones registradas</div>
-              </div>
-              `}
             </div>
+            
             <div class="footer">
-              <div class="footer-left">CAFF Consultas Médicas</div>
-              <div class="footer-center">Sistema de Gestión</div>
-              <div class="footer-right">${format(new Date(), 'dd/MM/yyyy HH:mm')}</div>
+              <div class="footer-left">
+                <p>🏥 Centro CAFF Gestión Integral</p>
+                <p>Sistema de Gestión Integral</p>
+              </div>
+              <div class="footer-center">
+                <p>📋 Documento Oficial</p>
+                <p>Consulta Médica - ${consulta.nombre}</p>
+              </div>
+              <div class="footer-right">
+                <p>📅 ${format(new Date(), 'dd/MM/yyyy')}</p>
+                <p>⏰ ${format(new Date(), 'HH:mm')} hrs</p>
+              </div>
             </div>
           </div>
         </body>
@@ -941,7 +956,7 @@ export function ConsultasClient({ initialConsultas }: ConsultasClientProps) {
       <html>
         <head>
           <meta charset="utf-8">
-          <title>Reporte de Consultas - CAFF Consultas Médicas</title>
+          <title>Reporte de Consultas - Centro CAFF Gestión Integral</title>
           <style>
             @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
             
@@ -1063,7 +1078,7 @@ export function ConsultasClient({ initialConsultas }: ConsultasClientProps) {
         <body>
           <div class="container">
             <div class="header">
-              <h1>CAFF CONSULTAS MÉDICAS</h1>
+              <h1>Centro CAFF Gestión Integral</h1>
               <h2>REPORTE DE CONSULTAS</h2>
               <p>Fecha de generación: ${format(new Date(), 'dd/MM/yyyy HH:mm')}</p>
               <p>Total de consultas filtradas: ${filteredConsultas.length}</p>
@@ -1104,7 +1119,7 @@ export function ConsultasClient({ initialConsultas }: ConsultasClientProps) {
             
             <div class="footer">
               <div class="footer-left">
-                <p>CAFF Consultas Médicas - Gestión de consultas</p>
+                <p>Centro CAFF Gestión Integral - Gestión de consultas</p>
               </div>
               <div class="footer-center">
                 <p>Sistema de Gestión de Consultas Médicas</p>
@@ -1186,7 +1201,7 @@ export function ConsultasClient({ initialConsultas }: ConsultasClientProps) {
       <html>
         <head>
           <meta charset="utf-8">
-          <title>Reporte de Consultas - CAFF Consultas Médicas</title>
+          <title>Reporte de Consultas - Centro CAFF Gestión Integral</title>
           <style>
             @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
             
@@ -1308,7 +1323,7 @@ export function ConsultasClient({ initialConsultas }: ConsultasClientProps) {
         <body>
           <div class="container">
             <div class="header">
-              <h1>CAFF CONSULTAS MÉDICAS</h1>
+              <h1>Centro CAFF Gestión Integral</h1>
               <h2>REPORTE DE CONSULTAS</h2>
               <p>Fecha de generación: ${format(new Date(), 'dd/MM/yyyy HH:mm')}</p>
               <p>Total de consultas filtradas: ${filteredConsultas.length}</p>
@@ -1349,7 +1364,7 @@ export function ConsultasClient({ initialConsultas }: ConsultasClientProps) {
             
             <div class="footer">
               <div class="footer-left">
-                <p>CAFF Consultas Médicas - Gestión de consultas</p>
+                <p>Centro CAFF Gestión Integral - Gestión de consultas</p>
               </div>
               <div class="footer-center">
                 <p>Sistema de Gestión de Consultas Médicas</p>
@@ -1399,8 +1414,8 @@ export function ConsultasClient({ initialConsultas }: ConsultasClientProps) {
       if (navigator.share && navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
         // Usar Web Share API para compartir el PDF
         await navigator.share({
-          title: 'Reporte de Consultas - CAFF',
-          text: `🏥 CAFF CONSULTAS MÉDICAS\n\nReporte de consultas médicas\n\n📊 Total de consultas: ${filteredConsultas.length}\n📅 Fecha de generación: ${format(new Date(), 'dd/MM/yyyy HH:mm')}\n\n📱 Compartido desde CAFF Consultas Médicas`,
+          title: 'Reporte de Consultas - Centro CAFF Gestión Integral',
+          text: `🏥 Centro CAFF Gestión Integral\n\nReporte de consultas médicas\n\n📊 Total de consultas: ${filteredConsultas.length}\n📅 Fecha de generación: ${format(new Date(), 'dd/MM/yyyy HH:mm')}\n\n📱 Compartido desde Centro CAFF Gestión Integral`,
           files: [pdfFile]
         });
         
@@ -1613,6 +1628,8 @@ export function ConsultasClient({ initialConsultas }: ConsultasClientProps) {
                       consultas={paginatedConsultas}
                       onEdit={handleEditConsulta}
                       onDelete={handleDeleteConfirmation}
+                      onSharePDF={handleSharePDF}
+                      onDownloadPDF={handleDownloadPDF}
                     />
                   )}
                 </CardContent>

@@ -510,13 +510,13 @@ export function InicioClient({ initialConsultas, initialSNAs }: InicioClientProp
   };
 
   const handleEditConsulta = (consulta: Consulta) => {
-    setSelectedConsulta(consulta);
-    setIsConsultaDetailOpen(true);
+    // Redirigir a la página de consultas con el parámetro de edición
+    router.push(`/consultas?edit=${consulta.id}`);
   };
 
   const handleEditSNA = (sna: SNA) => {
-    setSelectedSNA(sna);
-    setIsSNADetailOpen(true);
+    // Redirigir a la página de SNAs con el parámetro de edición
+    router.push(`/sna?edit=${sna.id}`);
   };
 
   const handleDeleteConsulta = (id: string) => {
@@ -534,7 +534,7 @@ export function InicioClient({ initialConsultas, initialSNAs }: InicioClientProp
     // Importar html2pdf dinámicamente
     const html2pdf = (await import('html2pdf.js')).default;
     
-    // Crear el contenido HTML del PDF con diseño optimizado para impresión
+    // Crear el contenido HTML del PDF con diseño profesional mejorado
     const htmlContent = `
       <!DOCTYPE html>
       <html>
@@ -562,11 +562,11 @@ export function InicioClient({ initialConsultas, initialSNAs }: InicioClientProp
             }
             
             .header { 
-              background: #f8fafc;
+              background: #eff6ff;
               color: #1f2937;
               padding: 20px 30px;
               text-align: center;
-              border-bottom: 2px solid #e5e7eb;
+              border-bottom: 2px solid #bfdbfe;
             }
             
             .header h1 { 
@@ -635,7 +635,7 @@ export function InicioClient({ initialConsultas, initialSNAs }: InicioClientProp
             
             .observations { 
               padding: 16px;
-              border: 2px solid #e5e7eb;
+              border: 2px solid #bfdbfe;
               border-radius: 8px;
               font-size: 13px;
               line-height: 1.6;
@@ -691,7 +691,7 @@ export function InicioClient({ initialConsultas, initialSNAs }: InicioClientProp
         <body>
           <div class="container">
             <div class="header">
-              <h1>🏥 CAFF CONSULTAS MÉDICAS</h1>
+              <h1>🏥 Centro CAFF Gestión Integral</h1>
               <h2>📋 INFORME DE CONSULTA MÉDICA</h2>
               <p>📅 Documento generado el: ${format(new Date(), 'dd/MM/yyyy')} a las ${format(new Date(), 'HH:mm')} hrs</p>
             </div>
@@ -759,7 +759,7 @@ export function InicioClient({ initialConsultas, initialSNAs }: InicioClientProp
                     <line x1="16" y1="17" x2="8" y2="17"></line>
                     <polyline points="10,9 9,9 8,9"></polyline>
                   </svg>
-                  OBSERVACIONES
+                  OBSERVACIONES MÉDICAS
                 </div>
                 <div class="observations ${!consulta.observaciones ? 'empty' : ''}">${consulta.observaciones || '📝 Espacio para observaciones médicas:\n\n• Evaluación realizada:\n• Diagnóstico:\n• Tratamiento indicado:\n• Recomendaciones:\n• Seguimiento requerido:'}</div>
               </div>
@@ -767,7 +767,7 @@ export function InicioClient({ initialConsultas, initialSNAs }: InicioClientProp
             
             <div class="footer">
               <div class="footer-left">
-                <p>🏥 CAFF Consultas Médicas</p>
+                <p>🏥 Centro CAFF Gestión Integral</p>
                 <p>Sistema de Gestión Integral</p>
               </div>
               <div class="footer-center">
@@ -821,7 +821,7 @@ export function InicioClient({ initialConsultas, initialSNAs }: InicioClientProp
         // Usar Web Share API para compartir el PDF
         await navigator.share({
           title: `📋 Informe de Consulta Médica - ${consulta.nombre}`,
-          text: `🏥 CAFF CONSULTAS MÉDICAS\n\n📋 INFORME DE CONSULTA MÉDICA\n\n👤 Información del Adolescente:\n• Nombre: ${consulta.nombre}\n• Cédula: ${consulta.cedula}\n\n🏥 Detalles de la Consulta:\n• Estudio: ${consulta.estudio}\n• Educador/a Responsable: ${consulta.educador}\n• Estado: ${consulta.estado}\n\n📅 Fechas Importantes:\n• Fecha de Consulta: ${format(new Date(consulta.fechaConsulta), 'dd/MM/yyyy')}\n• Fecha de Control: ${format(new Date(consulta.fechaControl), 'dd/MM/yyyy')}\n\n📱 Documento generado desde CAFF Consultas Médicas\n📄 Sistema de Gestión Integral de Consultas`,
+          text: `🏥 Centro CAFF Gestión Integral\n\n📋 INFORME DE CONSULTA MÉDICA\n\n👤 Información del Adolescente:\n• Nombre: ${consulta.nombre}\n• Cédula: ${consulta.cedula}\n\n🏥 Detalles de la Consulta:\n• Estudio: ${consulta.estudio}\n• Educador/a Responsable: ${consulta.educador}\n• Estado: ${consulta.estado}\n\n📅 Fechas Importantes:\n• Fecha de Consulta: ${format(new Date(consulta.fechaConsulta), 'dd/MM/yyyy')}\n• Fecha de Control: ${format(new Date(consulta.fechaControl), 'dd/MM/yyyy')}\n\n📱 Documento generado desde Centro CAFF Gestión Integral\n📄 Sistema de Gestión Integral de Consultas`,
           files: [pdfFile]
         });
         
@@ -1023,7 +1023,7 @@ export function InicioClient({ initialConsultas, initialSNAs }: InicioClientProp
         <body>
           <div class="container">
             <div class="header">
-              <h1>🏥 CAFF CONSULTAS MÉDICAS</h1>
+              <h1>🏥 Centro CAFF Gestión Integral</h1>
               <h2>⚠️ INFORME DE SALIDA NO ACORDADA (SNA)</h2>
               <p>📅 Documento generado el: ${format(new Date(), 'dd/MM/yyyy')} a las ${format(new Date(), 'HH:mm')} hrs</p>
             </div>
@@ -1105,7 +1105,7 @@ export function InicioClient({ initialConsultas, initialSNAs }: InicioClientProp
             
             <div class="footer">
               <div class="footer-left">
-                <p>🏥 CAFF Consultas Médicas</p>
+                <p>🏥 Centro CAFF Gestión Integral</p>
                 <p>Sistema de Gestión Integral</p>
               </div>
               <div class="footer-center">
@@ -1159,7 +1159,7 @@ export function InicioClient({ initialConsultas, initialSNAs }: InicioClientProp
         // Usar Web Share API para compartir el PDF
         await navigator.share({
           title: `⚠️ Informe de SNA - ${sna.nombreAdolescente}`,
-          text: `🏥 CAFF CONSULTAS MÉDICAS\n\n⚠️ INFORME DE SALIDA NO ACORDADA (SNA)\n\n👤 Información del Adolescente:\n• Nombre: ${sna.nombreAdolescente}\n• N° Denuncia: ${sna.numeroDenuncia}\n\n⚠️ Detalles del Incidente:\n• Estado: ${sna.estado}\n• Constatación de Lesiones: ${sna.constatacionLesiones ? 'Sí' : 'No'}\n${sna.retira ? `• Retira: ${sna.retira}\n` : ''}\n📅 Fechas Importantes:\n• Fecha de Denuncia: ${format(new Date(sna.fechaDenuncia), 'dd/MM/yyyy')}\n${sna.fechaCierre ? `• Fecha de Cierre: ${format(new Date(sna.fechaCierre), 'dd/MM/yyyy')}\n` : ''}\n📱 Documento generado desde CAFF Consultas Médicas\n📄 Sistema de Gestión Integral de SNAs`,
+          text: `🏥 Centro CAFF Gestión Integral\n\n⚠️ INFORME DE SALIDA NO ACORDADA (SNA)\n\n👤 Información del Adolescente:\n• Nombre: ${sna.nombreAdolescente}\n• N° Denuncia: ${sna.numeroDenuncia}\n\n⚠️ Detalles del Incidente:\n• Estado: ${sna.estado}\n• Constatación de Lesiones: ${sna.constatacionLesiones ? 'Sí' : 'No'}\n${sna.retira ? `• Retira: ${sna.retira}\n` : ''}\n📅 Fechas Importantes:\n• Fecha de Denuncia: ${format(new Date(sna.fechaDenuncia), 'dd/MM/yyyy')}\n${sna.fechaCierre ? `• Fecha de Cierre: ${format(new Date(sna.fechaCierre), 'dd/MM/yyyy')}\n` : ''}\n📱 Documento generado desde Centro CAFF Gestión Integral\n📄 Sistema de Gestión Integral de SNAs`,
           files: [pdfFile]
         });
         

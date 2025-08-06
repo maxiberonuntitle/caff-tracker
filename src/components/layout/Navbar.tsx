@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Menu, X, LayoutDashboard, ClipboardList, Plus, PlusCircle, Info, AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
@@ -28,8 +28,12 @@ type NavbarProps = {
 
 export function Navbar({ onNewConsulta, onNewSNA }: NavbarProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // Determinar si estamos en la página de SNAs
+  const isSNAPage = pathname === '/sna';
 
   // Efecto para detectar scroll con throttling
   useEffect(() => {
@@ -56,6 +60,12 @@ export function Navbar({ onNewConsulta, onNewSNA }: NavbarProps) {
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
+  // Función para navegar rápidamente
+  const quickNavigate = (path: string) => {
+    router.push(path);
+    closeMobileMenu();
+  };
+
   return (
     <>
              {/* Navbar principal */}
@@ -63,7 +73,9 @@ export function Navbar({ onNewConsulta, onNewSNA }: NavbarProps) {
           "fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out",
           isScrolled 
             ? "bg-white/98 backdrop-blur-lg shadow-xl border-b border-gray-200/50 py-2" 
-            : "bg-primary/90 backdrop-blur-lg shadow-xl py-3"
+            : isSNAPage
+              ? "bg-gradient-to-r from-orange-500/90 to-amber-500/90 backdrop-blur-lg shadow-xl py-3"
+              : "bg-primary/90 backdrop-blur-lg shadow-xl py-3"
         )}>
          <ContentContainer>
            <div className="flex items-center justify-between">
@@ -148,22 +160,71 @@ export function Navbar({ onNewConsulta, onNewSNA }: NavbarProps) {
                </DropdownMenu>
              </div>
 
+             {/* Controles móviles */}
+             <div className="flex items-center gap-2 lg:hidden">
+               {/* Toggle de navegación rápida */}
+               <div className={cn(
+                 "flex items-center rounded-full p-1 transition-all duration-300",
+                 isScrolled
+                   ? "bg-gray-100 border border-gray-200"
+                   : "bg-white/20 border border-white/30"
+               )}>
+                 <Button
+                   variant="ghost"
+                   size="sm"
+                   onClick={() => quickNavigate('/consultas')}
+                   className={cn(
+                     "h-7 px-2 text-xs font-medium transition-all duration-300 rounded-full",
+                     pathname === '/consultas'
+                       ? isScrolled
+                         ? "bg-primary text-white shadow-sm"
+                         : "bg-white/90 text-gray-900 shadow-sm"
+                       : isScrolled
+                         ? "text-gray-600 hover:text-primary hover:bg-gray-50"
+                         : "text-white/80 hover:text-white hover:bg-white/10"
+                   )}
+                 >
+                   <ClipboardList className="size-3" />
+                 </Button>
+                 <Button
+                   variant="ghost"
+                   size="sm"
+                   onClick={() => quickNavigate('/sna')}
+                   className={cn(
+                     "h-7 px-2 text-xs font-medium transition-all duration-300 rounded-full",
+                     pathname === '/sna'
+                       ? isScrolled
+                         ? "bg-primary text-white shadow-sm"
+                         : isSNAPage
+                           ? "bg-gradient-to-r from-orange-400 to-amber-400 text-white shadow-sm"
+                           : "bg-white/90 text-gray-900 shadow-sm"
+                       : isScrolled
+                         ? "text-gray-600 hover:text-primary hover:bg-gray-50"
+                         : "text-white/80 hover:text-white hover:bg-white/10"
+                   )}
+                 >
+                   <AlertTriangle className={cn(
+                     "size-3",
+                     pathname === '/sna' && !isScrolled && isSNAPage && "text-orange-100"
+                   )} />
+                 </Button>
+               </div>
 
-
-                         {/* Botón hamburguesa */}
-                         <Button
-                variant="ghost"
-                size="sm"
-                onClick={toggleMobileMenu}
-                                className={cn(
-                   "lg:hidden transition-all duration-300 p-2",
+               {/* Botón hamburguesa */}
+               <Button
+                 variant="ghost"
+                 size="sm"
+                 onClick={toggleMobileMenu}
+                 className={cn(
+                   "transition-all duration-300 p-2",
                    isScrolled
                      ? "text-gray-700 hover:bg-gray-100"
                      : "text-white hover:bg-white/20"
                  )}
-              >
-                {isMobileMenuOpen ? <X className="size-4" /> : <Menu className="size-4" />}
-              </Button>
+               >
+                 {isMobileMenuOpen ? <X className="size-4" /> : <Menu className="size-4" />}
+               </Button>
+             </div>
            </div>
          </ContentContainer>
 

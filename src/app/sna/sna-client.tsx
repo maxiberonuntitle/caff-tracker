@@ -456,7 +456,7 @@ export function SNAClient({ initialSNAs }: SNAClientProps) {
         <body>
           <div class="container">
             <div class="header">
-              <h1>CAFF CONSULTAS MÉDICAS</h1>
+              <h1>Centro CAFF Gestión Integral</h1>
               <h2>SALIDA NO ACORDADA (SNA)</h2>
               <p>Fecha de generación: ${format(new Date(), 'dd/MM/yyyy HH:mm')}</p>
             </div>
@@ -554,7 +554,7 @@ export function SNAClient({ initialSNAs }: SNAClientProps) {
             
             <div class="footer">
               <div class="footer-left">
-                <p>CAFF Consultas Médicas - Gestión de SNAs</p>
+                <p>Centro CAFF Gestión Integral - Gestión de SNAs</p>
               </div>
               <div class="footer-center">
                 <p>Sistema de Gestión de Salidas No Acordadas</p>
@@ -604,7 +604,7 @@ export function SNAClient({ initialSNAs }: SNAClientProps) {
         // Usar Web Share API para compartir el PDF
         await navigator.share({
           title: `SNA - ${sna.nombreAdolescente}`,
-          text: `🏥 CAFF CONSULTAS MÉDICAS\n\nSalida No Acordada (SNA) de ${sna.nombreAdolescente}\n\n📋 Información:\n• Adolescente: ${sna.nombreAdolescente}\n• N° Denuncia: ${sna.numeroDenuncia}\n• Estado: ${sna.estado}\n• Constatación de lesiones: ${sna.constatacionLesiones ? 'Sí' : 'No'}\n\n📅 Fecha Denuncia: ${format(new Date(sna.fechaDenuncia), 'dd/MM/yyyy')}\n${sna.fechaCierre ? `📅 Fecha Cierre: ${format(new Date(sna.fechaCierre), 'dd/MM/yyyy')}\n` : ''}${sna.retira ? `👨‍⚕️ Retira: ${sna.retira}\n` : ''}\n📱 Compartido desde CAFF Consultas Médicas`,
+          text: `🏥 Centro CAFF Gestión Integral\n\nSalida No Acordada (SNA) de ${sna.nombreAdolescente}\n\n📋 Información:\n• Adolescente: ${sna.nombreAdolescente}\n• N° Denuncia: ${sna.numeroDenuncia}\n• Estado: ${sna.estado}\n• Constatación de lesiones: ${sna.constatacionLesiones ? 'Sí' : 'No'}\n\n📅 Fecha Denuncia: ${format(new Date(sna.fechaDenuncia), 'dd/MM/yyyy')}\n${sna.fechaCierre ? `📅 Fecha Cierre: ${format(new Date(sna.fechaCierre), 'dd/MM/yyyy')}\n` : ''}${sna.retira ? `👨‍⚕️ Retira: ${sna.retira}\n` : ''}\n📱 Compartido desde Centro CAFF Gestión Integral`,
           files: [pdfFile]
         });
       } else {
@@ -830,7 +830,7 @@ export function SNAClient({ initialSNAs }: SNAClientProps) {
         <body>
           <div class="container">
             <div class="header">
-              <h1>CAFF CONSULTAS MÉDICAS</h1>
+              <h1>Centro CAFF Gestión Integral</h1>
               <h2>SALIDA NO ACORDADA (SNA)</h2>
               <p>Fecha de generación: ${format(new Date(), 'dd/MM/yyyy HH:mm')}</p>
             </div>
@@ -928,7 +928,7 @@ export function SNAClient({ initialSNAs }: SNAClientProps) {
             
             <div class="footer">
               <div class="footer-left">
-                <p>CAFF Consultas Médicas - Gestión de SNAs</p>
+                <p>Centro CAFF Gestión Integral - Gestión de SNAs</p>
               </div>
               <div class="footer-center">
                 <p>Sistema de Gestión de Salidas No Acordadas</p>
@@ -1016,7 +1016,7 @@ export function SNAClient({ initialSNAs }: SNAClientProps) {
       <html>
         <head>
           <meta charset="utf-8">
-          <title>Reporte de SNAs - CAFF</title>
+          <title>Reporte de SNAs - Centro CAFF Gestión Integral</title>
           <style>
             @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
             
@@ -1161,7 +1161,7 @@ export function SNAClient({ initialSNAs }: SNAClientProps) {
         <body>
           <div class="container">
             <div class="header">
-              <h1>CAFF CONSULTAS MÉDICAS</h1>
+              <h1>Centro CAFF Gestión Integral</h1>
               <h2>REPORTE DE SALIDAS NO ACORDADAS (SNAs)</h2>
               <p>Fecha de generación: ${format(new Date(), 'dd/MM/yyyy HH:mm')}</p>
             </div>
@@ -1203,7 +1203,7 @@ export function SNAClient({ initialSNAs }: SNAClientProps) {
             
             <div class="footer">
               <div class="footer-left">
-                <p>CAFF Consultas Médicas - Gestión de SNAs</p>
+                <p>Centro CAFF Gestión Integral - Gestión de SNAs</p>
               </div>
               <div class="footer-center">
                 <p>Sistema de Gestión de Salidas No Acordadas</p>
@@ -1270,7 +1270,7 @@ export function SNAClient({ initialSNAs }: SNAClientProps) {
       <html>
         <head>
           <meta charset="utf-8">
-          <title>Reporte de SNAs - CAFF</title>
+          <title>Reporte de SNAs - Centro CAFF Gestión Integral</title>
           <style>
             @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
             
@@ -1415,7 +1415,7 @@ export function SNAClient({ initialSNAs }: SNAClientProps) {
         <body>
           <div class="container">
             <div class="header">
-              <h1>CAFF CONSULTAS MÉDICAS</h1>
+              <h1>Centro CAFF Gestión Integral</h1>
               <h2>REPORTE DE SALIDAS NO ACORDADAS (SNAs)</h2>
               <p>Fecha de generación: ${format(new Date(), 'dd/MM/yyyy HH:mm')}</p>
             </div>
@@ -1457,7 +1457,7 @@ export function SNAClient({ initialSNAs }: SNAClientProps) {
             
             <div class="footer">
               <div class="footer-left">
-                <p>CAFF Consultas Médicas - Gestión de SNAs</p>
+                <p>Centro CAFF Gestión Integral - Gestión de SNAs</p>
               </div>
               <div class="footer-center">
                 <p>Sistema de Gestión de Salidas No Acordadas</p>
@@ -1505,8 +1505,8 @@ export function SNAClient({ initialSNAs }: SNAClientProps) {
       // Intentar compartir usando Web Share API
       if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
         await navigator.share({
-          title: 'Reporte de SNAs - CAFF',
-          text: 'Reporte de Salidas No Acordadas generado desde CAFF Consultas Médicas',
+          title: 'Reporte de SNAs - Centro CAFF Gestión Integral',
+          text: 'Reporte de Salidas No Acordadas generado desde Centro CAFF Gestión Integral',
           files: [file],
         });
         
@@ -1886,7 +1886,7 @@ export function SNAClient({ initialSNAs }: SNAClientProps) {
         onSubmit={handleFormSubmit}
         onDelete={handleDeleteConfirmation}
         onSharePDF={handleSharePDF}
-        onDownloadPDF={handleSharePDF}
+        onDownloadPDF={handleDownloadPDF}
         initialData={selectedSNA}
       />
 
